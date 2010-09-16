@@ -16,54 +16,57 @@ using namespace boost;
  */
 int main()
 {
+  fstream controlFile;    // Control file for this program
+  ifstream questionFile;  // File that contains the pop-quiz question
+  int remainingQuestions; // Number of remaining pop-quizzes to give
+  int remainingLectures;  // Number of remaining lectures
+  double probability;     // Probability there will be a pop quiz
+  bool isQuiz;            // If there is going to be a pop quiz
 
-  fstream cf; // What is this? count/chance file
-  ifstream qf; // What is this? question file, input only
-  int rq; //
-  int rl; //
-  double p; // probability
-  bool q; // question?
+  // Reads in two values from popquiz_conter.txt
+  controlFile.open("popquiz_conter.txt", ios::in);
+  controlFile >> remainingQuestions;
+  controlFile >> remainingLectures;
+  controlFile.close();
 
-  cf.open("pc.txt", ios::in);
-  cf >> rq;
-  cf >> rl;
-  cf.close();
-
-  p = static_cast<double> (rq) / static_cast<double> (rl);
+  // Calculate probability of pop quiz
+  probability = static_cast<double> (remainingQuestions)
+      / static_cast<double> (remainingLectures);
 
   // Set up random generator on range [0..1)
-  // See http://www.boost.org/doc/libs/1_44_0/doc/html/boost_random.html
-  // for details
+  // See http://www.boost.org/doc/libs/1_44_0/doc/html/boost_random.htmlf for
+  // details
   static mt11213b engine(static_cast<unsigned> (time(0)));
   uniform_real<double> distribution(0, 1);
   variate_generator<mt11213b&, uniform_real<double> > sampler(engine,
                                                               distribution);
 
-  q = (p < sampler());
+  isQuiz = (probability < sampler());
 
-  rl -= 1;
-  if (q) {
-    rq -= 1;
+  // Edit probabilities and write them back out to the file
+  remainingLectures -= 1;
+  if (isQuiz) {
+    remainingQuestions -= 1;
   }
+  controlFile.open("popquiz_conter.txt", ios::out | ios::trunc);
+  controlFile << remainingQuestions << " " << remainingLectures << endl;
+  controlFile.close();
 
-  cf.open("pc.txt", ios::out | ios::trunc);
-  cf << rq << " " << rl << endl;
-  cf.close();
-
-  if (q) {
+  // If pop quiz, print out question
+  if (isQuiz) {
     string line;
 
-    qf.open("pq.txt", ios::in);
+    questionFile.open("popquiz_question.txt", ios::in);
 
     cout << "Pop Quiz today!" << endl;
     cout << "--------------------------------------" << endl;
-    while (!qf.eof()) {
-      getline(qf, line);
+    while (!questionFile.eof()) {
+      getline(questionFile, line);
       cout << line << endl;
     }
     cout << "--------------------------------------" << endl;
 
-    qf.close();
+    questionFile.close();
   }
   else {
     cout << "Not today." << endl;
