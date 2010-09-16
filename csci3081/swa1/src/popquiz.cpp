@@ -1,6 +1,3 @@
-// Pop Quiz machine
-// Your job is to document it and change names to make it clearly understandable.
-
 #include <cstdlib>
 #include <fstream>
 #include <string>
@@ -12,7 +9,7 @@ using namespace std;
 using namespace boost;
 
 /**
- * Explain in some detail (2-3 paragraphs) what this program does and how it works.
+ * TODO : comment, program comment
  */
 int main()
 {
