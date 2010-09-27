@@ -1,11 +1,19 @@
 package sort;
 
+/**
+ * This interface specifies that the implementing class is capable of being used
+ * as a partitioning scheme for quick sort.
+ * 
+ * @author Brian Norman : 4332223 : norma272@umn.edu
+ * 
+ */
 public interface PartitioningScheme {
 
    /**
-    * Partitions the array into a left sub-array and a right sub-array and places the pivot between them. Everything
-    * that is greater then the pivot value is placed in the right sub-array and everything less then the pivot value is
-    * placed in the left sub-array. The new pivot index is returned.
+    * Partitions the array into a left sub-array and a right sub-array and
+    * places the pivot between them. Everything that is greater then the pivot
+    * value is placed in the right sub-array and everything less then the pivot
+    * value is placed in the left sub-array. The new pivot index is returned.
     * 
     * @param a
     *           the array to partition
@@ -20,16 +28,3 @@ public interface PartitioningScheme {
    public int partition(int[] a, int start, int end, int pivotIndex);
 
 }
-/**
- * <code>
- * partition(A, p, r)
- * x <- A[r]
- * i <- p - 1
- * for j <- p to r - 1
- *      do if A[j} <= x
- *              then i <- i + 1
- *                      exchange A[i] <-> A[j]
- * exchange A[i + 1} <-> A[r]
- * return i + 1
- * </code>
- */
