@@ -3,7 +3,7 @@ package sort;
 public class Heapsort implements SortingAlgorithm {
 
    @Override
-   public void sort(int[] a) {
+   public void sort(double[] a) {
       buildMaxHeap(a);
       int heapSize = a.length;
       for (int i = a.length - 1; i >= 1; i--) {
@@ -13,13 +13,13 @@ public class Heapsort implements SortingAlgorithm {
       }
    }
 
-   private void buildMaxHeap(int[] a) {
+   private void buildMaxHeap(double[] a) {
       for (int i = (a.length - 1) / 2; i >= 0; i--) {
          maxHeapify(a, a.length, i);
       }
    }
 
-   private void maxHeapify(int[] a, int heapSize, int i) {
+   private void maxHeapify(double[] a, int heapSize, int i) {
       int l = left(i);
       int r = right(i);
       int largest;

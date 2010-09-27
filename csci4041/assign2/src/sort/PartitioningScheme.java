@@ -25,6 +25,6 @@ public interface PartitioningScheme {
     *           the index where our pivot value is
     * @return the new pivot index
     */
-   public int partition(int[] a, int start, int end, int pivotIndex);
+   public int partition(double[] a, int start, int end, int pivotIndex);
 
 }

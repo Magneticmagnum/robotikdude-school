@@ -21,6 +21,6 @@ public interface PivotSelection {
     *           the ending index of the sub-array
     * @return the pivot index from the sub array
     */
-   public int selectPivot(int[] a, int start, int end);
+   public int selectPivot(double[] a, int start, int end);
 
 }
