@@ -11,11 +11,11 @@ public class QuickSort implements SortingAlgorithm {
    }
 
    @Override
-   public void sort(int[] a) {
+   public void sort(double[] a) {
       recusive(a, 0, a.length - 1);
    }
 
-   private void recusive(int[] a, int start, int end) {
+   private void recusive(double[] a, int start, int end) {
       // select a pivot
       int pivotIndex = selector.selectPivot(a, start, end);
 

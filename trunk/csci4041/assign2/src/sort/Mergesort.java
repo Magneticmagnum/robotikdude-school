@@ -3,11 +3,11 @@ package sort;
 public class Mergesort implements SortingAlgorithm {
 
    @Override
-   public void sort(int[] a) {
+   public void sort(double[] a) {
       recursive(a, 0, a.length - 1);
    }
 
-   private void recursive(int[] a, int start, int end) {
+   private void recursive(double[] a, int start, int end) {
       int mid = start + (end - start) / 2;
       if (mid != start)
          recursive(a, start, mid);
@@ -15,7 +15,7 @@ public class Mergesort implements SortingAlgorithm {
          recursive(a, mid + 1, end);
 
       // combine
-      int[] temp = new int[mid - start + 1];
+      double[] temp = new double[mid - start + 1];
       for (int i = 0; i < temp.length; i++)
          temp[i] = a[start + i];
 

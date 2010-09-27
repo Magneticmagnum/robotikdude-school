@@ -1,6 +1,6 @@
 package sort;
 public interface SortingAlgorithm {
 
-   public void sort(int[] a);
+   public void sort(double[] a);
 
 }

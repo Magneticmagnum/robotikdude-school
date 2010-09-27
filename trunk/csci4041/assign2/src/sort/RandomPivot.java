@@ -11,7 +11,7 @@ public class RandomPivot implements PivotSelection {
 	}
 
 	@Override
-	public int selectPivot(int[] a, int start, int end) {
+	public int selectPivot(double[] a, int start, int end) {
 		return (int) Math.floor(random.nextDouble() * (end - start) + start);
 	}
 
