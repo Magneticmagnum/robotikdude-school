@@ -1,13 +1,9 @@
 package sort;
 
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.InputMismatchException;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -15,14 +11,14 @@ import java.util.Scanner;
 public class Utils {
 
    public static class Options {
-      public boolean HELP = false;
-      public boolean FILE = false;
-      public boolean CREATE = false;
+      public boolean HELP      = false;
+      public boolean FILE      = false;
+      public boolean CREATE    = false;
       public boolean MEGABYTES = false;
-      public boolean DISPLAY = false;
+      public boolean DISPLAY   = false;
 
-      public int SIZE = 10;
-      public File LIST = null;
+      public int     SIZE      = 10;
+      public File    LIST      = null;
    }
 
    public static void swap(double[] a, int i, int j) {
@@ -95,25 +91,25 @@ public class Utils {
             for (int j = 1; j < args[i].length(); j++) {
 
                switch (args[i].charAt(j)) {
-                  case 'h' :
-                     opts.HELP = true;
-                     break;
-                  case 'f' :
-                     opts.FILE = true;
-                     break;
-                  case 's' :
-                  case 'c' :
-                     opts.CREATE = true;
-                     break;
-                  case 'M' :
-                     opts.MEGABYTES = true;
-                     break;
-                  case 'd' :
-                  case 'D' :
-                     opts.DISPLAY = true;
-                     break;
-                  default :
-                     // Unknown option
+               case 'h':
+                  opts.HELP = true;
+                  break;
+               case 'f':
+                  opts.FILE = true;
+                  break;
+               case 's':
+               case 'c':
+                  opts.CREATE = true;
+                  break;
+               case 'M':
+                  opts.MEGABYTES = true;
+                  break;
+               case 'd':
+               case 'D':
+                  opts.DISPLAY = true;
+                  break;
+               default:
+                  // Unknown option
                }
 
             }

@@ -24,23 +24,19 @@ public class Assignment2 {
 
       if (list != null) {
          SortingAlgorithm[] algorithms = {
-               new Mergesort(),
-               new Heapsort(),
-               new QuickSort(new RandomPivot(), new BeginningPartitioning()),
-               new QuickSort(new MedThreeRandomPivot(),
-                     new BeginningPartitioning()),
-               new QuickSort(new MedFiveRandomPivot(),
-                     new BeginningPartitioning()),
-               new QuickSort(new RandomPivot(), new EndsPartitioning()),
-               new QuickSort(new MedThreeRandomPivot(), new EndsPartitioning()),
-               new QuickSort(new MedFiveRandomPivot(), new EndsPartitioning())
-         };
+            new Mergesort(),
+            new Heapsort(),
+            new QuickSort(new RandomPivot(), new BeginningPartitioning()),
+            new QuickSort(new MedThreeRandomPivot(),
+                  new BeginningPartitioning()),
+            new QuickSort(new MedFiveRandomPivot(), new BeginningPartitioning()),
+            new QuickSort(new RandomPivot(), new EndsPartitioning()),
+            new QuickSort(new MedThreeRandomPivot(), new EndsPartitioning()),
+            new QuickSort(new MedFiveRandomPivot(), new EndsPartitioning()) };
 
          SortingAlgorithm quick = new Mergesort();
 
-         double[] a = {
-               2, 6, 1, 56, 9, 4, 21, 45, 9, 43, 5
-         };
+         double[] a = { 2, 6, 1, 56, 9, 4, 21, 45, 9, 43, 5 };
 
          System.out.print("A: ");
          for (int i = 0; i < a.length; i++)
