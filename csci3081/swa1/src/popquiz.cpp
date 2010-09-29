@@ -1,3 +1,10 @@
+/**
+ * Brian Norman
+ * ID: 4332223
+ * Short Writing Assignment 1
+ * popquiz.cpp
+ */
+
 #include <cstdlib>
 #include <fstream>
 #include <string>
@@ -9,7 +16,28 @@ using namespace std;
 using namespace boost;
 
 /**
- * TODO : comment, program comment
+ * This program will calculate and then randomize whether there will be a pop
+ * quiz during a specific lecture or not.
+ *
+ * Given a control file this program will calculate what the probability is of
+ * having a pop quiz based off how many there are left in a semester and how
+ * many lectures there are remaining. The control file must be in the working
+ * directory and have the name "popquiz_control.txt". The program will then
+ * create a random number and compare it with the probability and show whether
+ * there is a pop quiz or not.
+ *
+ * If there is a pop quiz, the pop quiz question will be printed as well. The
+ * pop quiz question needs to be in a file that is in the working directory and
+ * named "popquiz_question.txt". If there is not a pop quiz, a question will
+ * not be printed out.
+ *
+ * To use this program, simple type "./popquiz.o" without the quotations and
+ * make sure that the two required files, "popquiz_control.txt" and
+ * "popquiz_quesiton.txt" are in your working directory.
+ * E.x.
+ *     norma272$ ./popquiz.o
+ *
+ *
  */
 int main()
 {
@@ -21,7 +49,7 @@ int main()
   bool isQuiz;            // If there is going to be a pop quiz
 
   // Reads in two values from popquiz_conter.txt
-  controlFile.open("popquiz_conter.txt", ios::in);
+  controlFile.open("popquiz_control.txt", ios::in);
   controlFile >> remainingQuestions;
   controlFile >> remainingLectures;
   controlFile.close();
@@ -38,14 +66,14 @@ int main()
   variate_generator<mt11213b&, uniform_real<double> > sampler(engine,
                                                               distribution);
 
-  isQuiz = (probability < sampler());
+  isQuiz = (probability > sampler());
 
   // Edit probabilities and write them back out to the file
   remainingLectures -= 1;
   if (isQuiz) {
     remainingQuestions -= 1;
   }
-  controlFile.open("popquiz_conter.txt", ios::out | ios::trunc);
+  controlFile.open("popquiz_control.txt", ios::out | ios::trunc);
   controlFile << remainingQuestions << " " << remainingLectures << endl;
   controlFile.close();
 
