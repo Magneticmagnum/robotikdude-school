@@ -1,8 +1,11 @@
 package sort;
 
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -10,133 +13,139 @@ import java.util.Scanner;
 
 public class Utils {
 
-   public static class Options {
-      public boolean HELP      = false;
-      public boolean FILE      = false;
-      public boolean CREATE    = false;
-      public boolean MEGABYTES = false;
-      public boolean DISPLAY   = false;
-
-      public int     SIZE      = 10;
-      public File    LIST      = null;
+   private Utils() {
    }
 
-   public static void swap(double[] a, int i, int j) {
-      double temp = a[i];
-      a[i] = a[j];
-      a[j] = temp;
+   public static void runSort(String prog, String[] args,
+         SortingAlgorithm sorter) {
+
+      File file = null;
+      int size = 100;
+      boolean increasing = true;
+
+      if (args.length == 0) {
+
+      } else if (args.length == 1) {
+         try {
+            size = Integer.parseInt(args[0].trim());
+         } catch (NumberFormatException e) {
+            help(prog);
+            return;
+         }
+      } else if (args.length == 2) {
+         try {
+            size = Integer.parseInt(args[0].trim());
+            try {
+               increasing = (Integer.parseInt(args[1].trim()) == 0);
+            } catch (NumberFormatException e) {
+               help(prog);
+               return;
+            }
+         } catch (NumberFormatException e) {
+            file = new File(args[0]);
+            if (!file.canRead()) {
+               help(prog);
+               return;
+            }
+            try {
+               size = Integer.parseInt(args[1].trim());
+            } catch (NumberFormatException e1) {
+               help(prog);
+               return;
+            }
+         }
+      } else if (args.length == 3) {
+         file = new File(args[0]);
+         if (!file.canRead()) {
+            help(prog);
+            return;
+         }
+         try {
+            size = Integer.parseInt(args[1].trim());
+         } catch (NumberFormatException e1) {
+            help(prog);
+            return;
+         }
+         try {
+            increasing = (Integer.parseInt(args[2].trim()) == 0);
+         } catch (NumberFormatException e) {
+            help(prog);
+            return;
+         }
+      } else {
+         help(prog);
+         return;
+      }
+
+      double[] list = null;
+      if (file != null) {
+         list = Utils.read(file, size);
+      } else {
+         list = Utils.create(size);
+      }
+
+
+      // Arrays.sort(list);
+      long stime = System.currentTimeMillis();
+      sorter.sort(list, increasing);
+      System.out.println("Time taken: " + (System.currentTimeMillis() - stime) / 100.0 + " secs");
+   }
+
+   public static void help(String prog) {
+      System.out.println("Usage: java " + prog + " file size incrasing");
+      System.out.println("       java " + prog + " file size");
+      System.out.println("       java " + prog + " size increasing");
+      System.out.println("       java " + prog + " size");
+      System.out.println("       java " + prog);
+      System.out.println();
    }
 
    public static double[] create(int size) {
       Random generator = new Random(System.currentTimeMillis());
       double[] list = new double[size];
       for (int i = 0; i < size; i++) {
-         list[i] = generator.nextDouble();
+         list[i] = generator.nextDouble() * 100.0;
       }
       return list;
    }
 
-   public static double[] read(File file) {
-      int size = 0;
-      Scanner scanner = null;
-      try {
-         scanner = new Scanner(file);
-         while (scanner.hasNext()) {
-            scanner.next();
-            size++;
-         }
-         scanner.close();
-      } catch (FileNotFoundException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-
+   public static double[] read(File file, int size) {
       double[] list = new double[size];
+      Scanner scanner = null;
+      int i = 0;
       try {
          scanner = new Scanner(file);
-         int i = 0;
-         while (scanner.hasNext()) {
-            list[i++] = scanner.nextDouble();
+         while (scanner.hasNext() && i < size) {
+            list[i] = scanner.nextDouble();
+            i++;
          }
          scanner.close();
       } catch (FileNotFoundException e) {
-         // TODO Auto-generated catch block
          e.printStackTrace();
       } catch (InputMismatchException e) {
          // error, non-double element found in file
+         // fill rest of array with zeros
+         for (; i < size; i++) {
+
+         }
          e.printStackTrace();
          scanner.close();
       }
       return list;
    }
 
-   public static Utils.Options processArgs(String[] args) {
-      Utils.Options opts = new Utils.Options();
-      for (int i = 1; i < args.length; i++) {
-         if (args[i].startsWith("--")) {
-
-            if (args[i].equals("--help")) {
-               opts.HELP = true;
-            } else if (args[i].equals("--file")) {
-               opts.FILE = true;
-            } else if (args[i].equals("--create") || args[i].equals("--size")) {
-               opts.CREATE = true;
-            } else if (args[i].equals("--display")) {
-               opts.DISPLAY = true;
-            } else {
-               // Unknown option
-            }
-
-         } else if (args[i].startsWith("-")) {
-            for (int j = 1; j < args[i].length(); j++) {
-
-               switch (args[i].charAt(j)) {
-               case 'h':
-                  opts.HELP = true;
-                  break;
-               case 'f':
-                  opts.FILE = true;
-                  break;
-               case 's':
-               case 'c':
-                  opts.CREATE = true;
-                  break;
-               case 'M':
-                  opts.MEGABYTES = true;
-                  break;
-               case 'd':
-               case 'D':
-                  opts.DISPLAY = true;
-                  break;
-               default:
-                  // Unknown option
-               }
-
-            }
-         } else {
-            try {
-
-               int size = Integer.parseInt(args[i].trim());
-               opts.SIZE = size;
-
-            } catch (NumberFormatException e) {
-
-               File file = new File(args[i]);
-               if (file.canRead()) {
-                  opts.LIST = file;
-               }
-
-            }
+   public static void write(File file, double[] list) {
+      PrintStream out;
+      try {
+         out = new PrintStream(new BufferedOutputStream(new FileOutputStream(
+               file)));
+         for (int i = 0; i < list.length; i++) {
+            out.println(list[i]);
          }
+         out.close();
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
       }
-      return opts;
    }
 
-   public static void help(String[] args) {
-      System.out.println("");
-   }
-
-   public static void unknownOptionChar(String[] args, char option) {
-
-   }
 }

@@ -1,4 +1,4 @@
-package sort;
+package sort.pivot;
 
 
 import java.util.Random;

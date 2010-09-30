@@ -1,4 +1,4 @@
-package sort;
+package sort.pivot;
 
 /**
  * This interfaces specifies that the implementing class is capable of being
