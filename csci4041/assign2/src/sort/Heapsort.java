@@ -3,46 +3,47 @@ package sort;
 public class Heapsort implements SortingAlgorithm {
 
    @Override
-   public void sort(double[] a) {
-      buildMaxHeap(a);
+   public void sort(double[] a, boolean increasing) {
+      buildHeap(a, increasing);
       int heapSize = a.length;
       for (int i = a.length - 1; i >= 1; i--) {
-         Utils.swap(a, 0, i);
+
+         double temp = a[0];
+         a[0] = a[i];
+         a[i] = temp;
+
          heapSize--;
-         maxHeapify(a, heapSize, 0);
+         heapify(a, heapSize, 0, increasing);
       }
    }
 
-   private void buildMaxHeap(double[] a) {
+   private void buildHeap(double[] a, boolean increasing) {
       for (int i = (a.length - 1) / 2; i >= 0; i--) {
-         maxHeapify(a, a.length, i);
+         heapify(a, a.length, i, increasing);
       }
    }
 
-   private void maxHeapify(double[] a, int heapSize, int i) {
-      int l = left(i);
-      int r = right(i);
+   private void heapify(double[] a, int heapSize, int i, boolean increasing) {
+      int l = 2 * i;
+      int r = l + 1;
       int largest;
-      if (l < heapSize && a[l] > a[i]) {
+      if (l < heapSize
+            && ((increasing && a[l] > a[i]) || (!increasing && a[l] < a[i]))) {
          largest = l;
       } else {
          largest = i;
       }
-      if (r < heapSize && a[r] > a[largest]) {
+      if (r < heapSize
+            && ((increasing && a[r] > a[largest]) || (!increasing && a[r] < a[largest]))) {
          largest = r;
       }
       if (largest != i) {
-         Utils.swap(a, i, largest);
-         maxHeapify(a, heapSize, largest);
+         double temp = a[i];
+         a[i] = a[largest];
+         a[largest] = temp;
+
+         heapify(a, heapSize, largest, increasing);
       }
-   }
-
-   private int left(int i) {
-      return 2 * i;
-   }
-
-   private int right(int i) {
-      return 2 * i + 1;
    }
 
 }

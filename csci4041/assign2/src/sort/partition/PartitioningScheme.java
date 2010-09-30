@@ -1,4 +1,4 @@
-package sort;
+package sort.partition;
 
 /**
  * This interface specifies that the implementing class is capable of being used
@@ -25,6 +25,6 @@ public interface PartitioningScheme {
     *           the index where our pivot value is
     * @return the new pivot index
     */
-   public int partition(double[] a, int start, int end, int pivotIndex);
+   public int partition(double[] a, int start, int end, int pivotIndex, boolean increasing);
 
 }
