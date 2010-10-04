@@ -1,13 +1,50 @@
-import sort.QuickSort;
-import sort.Utils;
-import sort.partition.BeginningPartitioning;
-import sort.pivot.MedFiveRandomPivot;
+/* 
+ * CSci4041 F2010 Assignment 2
+ * section: 3
+ * login: norma272
+ * date: 10/4/19
+ * name: Brian E Norman
+ * id: 4332223
+ */
 
-public class qsort5median1 {
+
+public class qsort5median1 implements SortingAlgorithm {
 
    public static void main(String[] args) {
-      Utils.runSort("hsort", args, new QuickSort(new MedFiveRandomPivot(),
-            new BeginningPartitioning()));
+      // pass the the hard work off to a separate function
+      Utils.runSort("qsort5median1", args, new qsort5median1());
+   }
+
+
+   // *************************************************************************
+   // The following is the actual sorting method for this program
+   // *************************************************************************
+
+   // pivoting scheme has been abstracted for reusability
+   private PivotSelection     selector    = new MedFiveRandomPivot();
+
+   // partitioning scheme has been abstracted for reusability
+   private PartitioningScheme partitioner = new BeginningPartitioning();
+
+   @Override
+   public void sort(double[] a, boolean increasing) {
+      recusive(a, 0, a.length - 1, increasing);
+   }
+
+   private void recusive(double[] a, int start, int end, boolean increasing) {
+      // select a pivot
+      int pivotIndex = selector.selectPivot(a, start, end);
+
+      // create L and R sub-arrays
+      pivotIndex = partitioner.partition(a, start, end, pivotIndex, increasing);
+
+      // recursively call on L and R sub-arrays
+      if (pivotIndex - start > 1)
+         recusive(a, start, pivotIndex - 1, increasing);
+      if (end - pivotIndex > 1)
+         recusive(a, pivotIndex + 1, end, increasing);
+
+      // The combining is done automatically as this is an in place sort.
    }
 
 }
