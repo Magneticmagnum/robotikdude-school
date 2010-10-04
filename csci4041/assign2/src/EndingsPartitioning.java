@@ -1,5 +1,5 @@
-package sort.partition;
-
+// starts on the ends of the sub list and iterates toward the center and swaps
+// elements as needed
 public class EndingsPartitioning implements PartitioningScheme {
 
    @Override

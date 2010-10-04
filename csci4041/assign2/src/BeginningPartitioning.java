@@ -1,5 +1,5 @@
-package sort.partition;
-
+// starts at the beginning of the list and moves through the list keeping track
+// of the center as it moves and swaps elements there
 public class BeginningPartitioning implements PartitioningScheme {
 
    @Override

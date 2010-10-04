@@ -1,6 +1,3 @@
-package sort;
-
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,22 +7,28 @@ import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
-
+// a collection of helper functions that are used for convenience
 public class Utils {
 
+   // hah! can't create me!
    private Utils() {
    }
 
+   // actually runs the sort test
    public static void runSort(String prog, String[] args,
          SortingAlgorithm sorter) {
 
-      File file = null;
+      // defaults
+      File inFile = null;
       int size = 100;
       boolean increasing = true;
+      double[] list = null;
 
-      if (args.length == 0) {
-
-      } else if (args.length == 1) {
+      // **********************************************************************
+      // start argument parsing
+      // **********************************************************************
+      if (args.length == 1) {
+         // Usage: java prog size
          try {
             size = Integer.parseInt(args[0].trim());
          } catch (NumberFormatException e) {
@@ -34,6 +37,7 @@ public class Utils {
          }
       } else if (args.length == 2) {
          try {
+            // Usage: java prog size increasing
             size = Integer.parseInt(args[0].trim());
             try {
                increasing = (Integer.parseInt(args[1].trim()) == 0);
@@ -42,9 +46,10 @@ public class Utils {
                return;
             }
          } catch (NumberFormatException e) {
-            file = new File(args[0]);
-            if (!file.canRead()) {
-               help(prog);
+            // Usage: java prog file size
+            inFile = new File(args[0]);
+            if (!inFile.canRead()) {
+               System.out.println("ERROR: could not open the specified file.");
                return;
             }
             try {
@@ -55,9 +60,10 @@ public class Utils {
             }
          }
       } else if (args.length == 3) {
-         file = new File(args[0]);
-         if (!file.canRead()) {
-            help(prog);
+         // Usage: java prog file size increasing
+         inFile = new File(args[0]);
+         if (!inFile.canRead()) {
+            System.out.println("ERROR: could not open the specified file.");
             return;
          }
          try {
@@ -76,30 +82,41 @@ public class Utils {
          help(prog);
          return;
       }
+      // **********************************************************************
+      // end argument parsing
+      // **********************************************************************
 
-      double[] list = null;
-      if (file != null) {
-         list = Utils.read(file, size);
+      // either create or read the list
+      if (inFile != null) {
+         list = Utils.read(inFile, size);
       } else {
          list = Utils.create(size);
       }
 
-
-      // Arrays.sort(list);
+      // start timing and run the sort on the given list
       long stime = System.currentTimeMillis();
+      // Arrays.sort(list); // used for testing the built in sort
       sorter.sort(list, increasing);
-      System.out.println("Time taken: " + (System.currentTimeMillis() - stime) / 100.0 + " secs");
+      System.out.println("Time taken: " + (System.currentTimeMillis() - stime)
+            / 100.0 + " secs");
+
+      // write back out if read from a file
+      if (inFile != null) {
+         File outFile = new File(inFile.getAbsolutePath() + ".srt");
+         write(outFile, list);
+      }
    }
 
+   // prints out how to use this program
    public static void help(String prog) {
       System.out.println("Usage: java " + prog + " file size incrasing");
       System.out.println("       java " + prog + " file size");
       System.out.println("       java " + prog + " size increasing");
       System.out.println("       java " + prog + " size");
-      System.out.println("       java " + prog);
       System.out.println();
    }
 
+   // creates a list of the given size
    public static double[] create(int size) {
       Random generator = new Random(System.currentTimeMillis());
       double[] list = new double[size];
@@ -109,6 +126,7 @@ public class Utils {
       return list;
    }
 
+   // reads a list from the given file of the given size
    public static double[] read(File file, int size) {
       double[] list = new double[size];
       Scanner scanner = null;
@@ -126,7 +144,7 @@ public class Utils {
          // error, non-double element found in file
          // fill rest of array with zeros
          for (; i < size; i++) {
-
+            list[i] = 0.0;
          }
          e.printStackTrace();
          scanner.close();
@@ -134,6 +152,7 @@ public class Utils {
       return list;
    }
 
+   // writes out the given list to the given file
    public static void write(File file, double[] list) {
       PrintStream out;
       try {

@@ -1,9 +1,7 @@
-package sort.pivot;
-
-
 import java.util.Random;
 
-
+// selects the median of five elements out of the list and returns that as the
+// pivot
 public class MedFiveRandomPivot implements PivotSelection {
 
    private Random random;
