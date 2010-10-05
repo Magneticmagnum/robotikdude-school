@@ -1,0 +1,6 @@
+avocado
+banana
+carambola
+mango
+papaya
+pineapple

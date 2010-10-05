@@ -1,0 +1,10 @@
+apple
+avocado
+banana
+carambola
+mango
+orange
+papaya
+peach
+pear
+pineapple
