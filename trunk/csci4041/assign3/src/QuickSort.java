@@ -11,11 +11,11 @@ public class QuickSort implements SortingAlgorithm {
 
    @Override
    public void sort(double[] a) { // , boolean increasing) {
-      recusive(a, 0, a.length - 1); // , increasing);
+      sort(a, 0, a.length - 1); // , increasing);
    }
 
-   private void recusive(double[] a, int start, int end) { // , boolean
-                                                           // increasing) {
+   public void sort(double[] a, int start, int end) { // , boolean
+                                                          // increasing) {
       // select a pivot
       int pivotIndex = (int) (random.nextDouble() * (end - start) + start);
 
@@ -47,9 +47,9 @@ public class QuickSort implements SortingAlgorithm {
 
       // recursively call on L and R sub-arrays
       if (pivotIndex - start > 1)
-         recusive(a, start, pivotIndex - 1); // , increasing);
+         sort(a, start, pivotIndex - 1); // , increasing);
       if (end - pivotIndex > 1)
-         recusive(a, pivotIndex + 1, end); // , increasing);
+         sort(a, pivotIndex + 1, end); // , increasing);
 
       // The combining is done automatically as this is an in place sort.
    }
