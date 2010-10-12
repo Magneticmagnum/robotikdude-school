@@ -3,30 +3,9 @@ public class samplesort implements SortingAlgorithm {
    public static void main(String[] args) {
       samplesort sort = new samplesort(3);
       double[] array = {
-         22,
-         7,
-         13,
-         18,
-         2,
-         17,
-         1,
-         14,
-         20,
-         6,
-         10,
-         24,
-         15,
-         9,
-         21,
-         3,
-         16,
-         19,
-         23,
-         4,
-         11,
-         12,
-         5,
-         8 };
+            22, 7, 13, 18, 2, 17, 1, 14, 20, 6, 10, 24, 15, 9, 21, 3, 16, 19,
+            23, 4, 11, 12, 5, 8
+      };
 
 
       System.out.print("List Before: ");
@@ -55,10 +34,9 @@ public class samplesort implements SortingAlgorithm {
    public void sort(double[] a) {
       QuickSort qsort = new QuickSort();
       int n = a.length;
-      double n_p = (double) n / p;
+      int[] splits = getSplitIndexes(a.length);
 
       System.out.print("List: ");
-      int[] splits = getSplitIndexes(a.length);
       for (int i = 0; i < p; i++) {
          qsort.sort(a, splits[i], splits[i + 1] - 1);
 
@@ -104,12 +82,12 @@ public class samplesort implements SortingAlgorithm {
             if (a[i] < buckets[j]) {
                Link l = new Link();
                l.value = a[i];
-               l.next = linkedBuckets[j];
-               linkedBuckets[j] = l;
+               linkedBuckets[j] = insertLink(linkedBuckets[j], l);
                break;
             }
          }
       }
+
       for (int i = 0; i < p; i++) {
          System.out.print("Bucket " + i + ": ");
          Link l = linkedBuckets[i];
@@ -118,6 +96,15 @@ public class samplesort implements SortingAlgorithm {
             l = l.next;
          }
          System.out.println();
+      }
+
+      int i = 0;
+      for (int bucket = 0; bucket < buckets.length; bucket++) {
+         Link l = linkedBuckets[bucket];
+         while (l != null) {
+            a[i++] = l.value;
+            l = l.next;
+         }
       }
    }
 
@@ -137,8 +124,36 @@ public class samplesort implements SortingAlgorithm {
       return splits;
    }
 
+   private int binarySearch(double[] buckets, int value) {
+      int min = 0;
+      int max = buckets.length;
+      int mid = (min + max) / 2;
+      while (mid != min) {
+         
+      }
+
+      return 0;
+   }
+
+   private Link insertLink(Link head, Link l) {
+      Link iter = head;
+      if (iter == null) {
+         head = l;
+      } else if (l.value < iter.value) {
+         l.next = head;
+         head = l;
+      } else {
+         while (iter.next != null && iter.next.value < l.value) {
+            iter = iter.next;
+         }
+         l.next = iter.next;
+         iter.next = l;
+      }
+      return head;
+   }
+
    private class Link {
-      Link   next;
+      Link next;
       double value;
    }
 }
