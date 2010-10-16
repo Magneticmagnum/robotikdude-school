@@ -35,43 +35,43 @@ public:
 
 static class TestDescription_QueueTest_testGet_Size : public CxxTest::RealTestDescription {
 public:
- TestDescription_QueueTest_testGet_Size() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 46, "testGet_Size" ) {}
+ TestDescription_QueueTest_testGet_Size() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 47, "testGet_Size" ) {}
  void runTest() { suite_QueueTest.testGet_Size(); }
 } testDescription_QueueTest_testGet_Size;
 
 static class TestDescription_QueueTest_testGet_FIFO : public CxxTest::RealTestDescription {
 public:
- TestDescription_QueueTest_testGet_FIFO() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 65, "testGet_FIFO" ) {}
+ TestDescription_QueueTest_testGet_FIFO() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 67, "testGet_FIFO" ) {}
  void runTest() { suite_QueueTest.testGet_FIFO(); }
 } testDescription_QueueTest_testGet_FIFO;
 
 static class TestDescription_QueueTest_testGet_Values : public CxxTest::RealTestDescription {
 public:
- TestDescription_QueueTest_testGet_Values() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 83, "testGet_Values" ) {}
+ TestDescription_QueueTest_testGet_Values() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 88, "testGet_Values" ) {}
  void runTest() { suite_QueueTest.testGet_Values(); }
 } testDescription_QueueTest_testGet_Values;
 
 static class TestDescription_QueueTest_testPut_Size : public CxxTest::RealTestDescription {
 public:
- TestDescription_QueueTest_testPut_Size() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 102, "testPut_Size" ) {}
+ TestDescription_QueueTest_testPut_Size() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 107, "testPut_Size" ) {}
  void runTest() { suite_QueueTest.testPut_Size(); }
 } testDescription_QueueTest_testPut_Size;
 
 static class TestDescription_QueueTest_testSize : public CxxTest::RealTestDescription {
 public:
- TestDescription_QueueTest_testSize() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 118, "testSize" ) {}
+ TestDescription_QueueTest_testSize() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 125, "testSize" ) {}
  void runTest() { suite_QueueTest.testSize(); }
 } testDescription_QueueTest_testSize;
 
 static class TestDescription_QueueTest_test_global_Queue_QueueCopy_Size : public CxxTest::RealTestDescription {
 public:
- TestDescription_QueueTest_test_global_Queue_QueueCopy_Size() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 152, "test_global_Queue_QueueCopy_Size" ) {}
+ TestDescription_QueueTest_test_global_Queue_QueueCopy_Size() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 163, "test_global_Queue_QueueCopy_Size" ) {}
  void runTest() { suite_QueueTest.test_global_Queue_QueueCopy_Size(); }
 } testDescription_QueueTest_test_global_Queue_QueueCopy_Size;
 
 static class TestDescription_QueueTest_test_global_Queue_QueueCopy_Contents : public CxxTest::RealTestDescription {
 public:
- TestDescription_QueueTest_test_global_Queue_QueueCopy_Contents() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 172, "test_global_Queue_QueueCopy_Contents" ) {}
+ TestDescription_QueueTest_test_global_Queue_QueueCopy_Contents() : CxxTest::RealTestDescription( Tests_QueueTest, suiteDescription_QueueTest, 186, "test_global_Queue_QueueCopy_Contents" ) {}
  void runTest() { suite_QueueTest.test_global_Queue_QueueCopy_Contents(); }
 } testDescription_QueueTest_test_global_Queue_QueueCopy_Contents;
 
