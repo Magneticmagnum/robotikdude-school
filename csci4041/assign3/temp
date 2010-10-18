@@ -1,0 +1,9 @@
+/**
+    * 1.) Sort the p n/p subarrays<br>
+    * 2.) Select p-1 equally spaced elements<br>
+    * 3.) => Combine the p*(p-1) into a sorted array and select p-1 equally
+    * spaced elements<br>
+    * Smart: p-way merge with a heap<br>
+    * 4.) => Patition each of the p n/p subarrays<br>
+    * 5.) => Sort each bucket
+    */
