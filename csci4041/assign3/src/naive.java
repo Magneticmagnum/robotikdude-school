@@ -13,12 +13,15 @@ public class naive implements SortingAlgorithm {
    @Override
    public void sort(double[] a) {
       QuickSort qsort = new QuickSort();
-      int[] splits = getSplitIndexes(a.length);
 
+      // split the array into p subarrays and sort them
+      int[] splits = getSplitIndexes(a.length);
       for (int i = 0; i < p; i++) {
          qsort.sort(a, splits[i], splits[i + 1] - 1);
       }
 
+      // select p-1 elements from each subarray and place
+      // them into a separate array, sort that array
       double[] sample = new double[p * (p - 1)];
       int s = 0;
       for (int i = 0; i < p; i++) {
@@ -27,9 +30,9 @@ public class naive implements SortingAlgorithm {
             sample[s++] = a[(int) (splits[i] + j * space)];
          }
       }
-
       qsort.sort(sample);
 
+      // select p-1 elements from that separate array
       double[] buckets = new double[p];
       double space = (double) sample.length / p;
       for (int i = 0; i < p - 1; i++) {
@@ -37,12 +40,15 @@ public class naive implements SortingAlgorithm {
       }
       buckets[p - 1] = Double.POSITIVE_INFINITY;
 
+      // place each element from the array into the
+      // appropriate bucket using binary search
       Link[] linkedBuckets = new Link[p];
       for (int i = 0; i < a.length; i++) {
          int j = binarySearch(buckets, a[i]);
          linkedBuckets[j] = insertLink(linkedBuckets[j], a[i]);
       }
 
+      // read each bucket back into the array
       int i = 0;
       for (int bucket = 0; bucket < buckets.length; bucket++) {
          Link l = linkedBuckets[bucket];
@@ -51,6 +57,7 @@ public class naive implements SortingAlgorithm {
             l = l.next;
          }
       }
+
    }
 
    private int[] getSplitIndexes(int length) {

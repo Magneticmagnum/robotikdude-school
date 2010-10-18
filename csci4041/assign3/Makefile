@@ -5,7 +5,8 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-	samplesort.java
+	naive.java \
+	smart.java
 
 default: classes
 
