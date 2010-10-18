@@ -7,6 +7,7 @@ import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
+
 // a collection of helper functions that are used for convenience
 public class Utils {
 
@@ -164,6 +165,75 @@ public class Utils {
          out.close();
       } catch (FileNotFoundException e) {
          e.printStackTrace();
+      }
+   }
+
+
+
+   public static int[] getSplitIndexes(double n, int p) {
+      int[] splits = new int[p + 1];
+      double start = 0;
+      for (int i = 0; i < splits.length; i++) {
+         splits[i] = (int) start;
+         start += n / p;
+      }
+
+      return splits;
+   }
+
+   public static int binarySearch(double[] buckets, double value) {
+      int min = 0;
+      int max = buckets.length;
+      int mid = min + (max - min) / 2;
+      while (mid != min) {
+         if (buckets[mid] > value) {
+            max = mid;
+         } else {
+            min = mid;
+         }
+         mid = min + (max - min) / 2;
+      }
+
+      if (buckets[mid] > value) {
+         return mid;
+      } else {
+         return max;
+      }
+   }
+
+   public static Link insertLink(Link head, double value) {
+      Link iter = head;
+      if (iter == null) {
+         head = new Link(value);
+      } else if (value < iter.value) {
+         head = new Link(value, head);
+      } else {
+         while (iter.next != null && iter.next.value < value) {
+            iter = iter.next;
+         }
+         iter.next = new Link(value, iter.next);
+      }
+      return head;
+   }
+
+   public static void heapify(PWayMerge[] heap, int heapSize, int i, double[] a) {
+      int l = 2 * i;
+      int r = l + 1;
+      int smallest;
+      if (l < heapSize && a[heap[l].index()] < a[heap[i].index()]) {
+         smallest = l;
+      } else {
+         smallest = i;
+      }
+      if (r < heapSize && a[heap[r].index()] < a[heap[smallest].index()]) {
+         smallest = r;
+      }
+      if (smallest != i) {
+         PWayMerge temp = heap[i];
+         heap[i] = heap[smallest];
+         heap[smallest] = temp;
+
+         heapify(heap, heapSize, smallest, a);
       }
    }
 
