@@ -74,6 +74,8 @@ void new_tab_created_cb(GtkButton *button, gpointer data)
   new_req.type = CREATE_TAB;
   new_req.req.new_tab_req.tab_index = tab_index;
 
+  write(channel.child_to_parent_fd, &new_req, sizeof(child_req_to_parent));
+
 }
 
 int main()
@@ -81,6 +83,8 @@ int main()
 {
   // Append your code here
   // TODO
+  // create_browser(tab_type.CONTROLLER_TAB, 0, &new_tab_created_cb, &uri_entered_cb, );
+  // show_browser();
 
   return 0;
 }
