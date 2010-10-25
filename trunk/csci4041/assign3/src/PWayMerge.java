@@ -2,7 +2,7 @@ public class PWayMerge {
    public PWayMerge(int start, int end) {
       this.start = start;
       this.end = end;
-      this.i = start;
+      this.i = 0;
    }
 
    public int start;

@@ -4,18 +4,13 @@ public class naive implements SortingAlgorithm {
    }
 
 
-   private int p;
-
-   public naive(int p) {
-      this.p = p;
-   }
 
    @Override
-   public void sort(double[] a) {
+   public void sort(double[] a, int p) {
       QuickSort qsort = new QuickSort();
 
       // split the array into p subarrays and sort them
-      int[] splits = getSplitIndexes(a.length);
+      int[] splits = getSplitIndexes(a.length, p);
       for (int i = 0; i < p; i++) {
          qsort.sort(a, splits[i], splits[i + 1] - 1);
       }
@@ -60,7 +55,7 @@ public class naive implements SortingAlgorithm {
 
    }
 
-   private int[] getSplitIndexes(int length) {
+   private int[] getSplitIndexes(int length, int p) {
       int[] splits = new int[p + 1];
 
       double n = length;

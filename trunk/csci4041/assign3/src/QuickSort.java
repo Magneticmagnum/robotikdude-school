@@ -1,7 +1,7 @@
 import java.util.Random;
 
 
-public class QuickSort implements SortingAlgorithm {
+public class QuickSort {
 
    private Random random;
 
@@ -9,13 +9,11 @@ public class QuickSort implements SortingAlgorithm {
       random = new Random(System.currentTimeMillis());
    }
 
-   @Override
-   public void sort(double[] a) { // , boolean increasing) {
-      sort(a, 0, a.length - 1); // , increasing);
+   public void sort(double[] a) {
+      sort(a, 0, a.length - 1);
    }
 
-   public void sort(double[] a, int start, int end) { // , boolean
-                                                          // increasing) {
+   public void sort(double[] a, int start, int end) {
       // select a pivot
       int pivotIndex = (int) (random.nextDouble() * (end - start) + start);
 
