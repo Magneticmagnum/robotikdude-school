@@ -21,61 +21,30 @@ public class Utils {
 
       // defaults
       File inFile = null;
-      int size = 100;
-      boolean increasing = true;
+      File outFile = null;
+      int heapSize = 100;
       double[] list = null;
 
       // **********************************************************************
       // start argument parsing
       // **********************************************************************
-      if (args.length == 1) {
-         // Usage: java prog size
-         try {
-            size = Integer.parseInt(args[0].trim());
-         } catch (NumberFormatException e) {
-            help(prog);
-            return;
-         }
-      } else if (args.length == 2) {
-         try {
-            // Usage: java prog size increasing
-            size = Integer.parseInt(args[0].trim());
-            try {
-               increasing = (Integer.parseInt(args[1].trim()) == 0);
-            } catch (NumberFormatException e) {
-               help(prog);
-               return;
-            }
-         } catch (NumberFormatException e) {
-            // Usage: java prog file size
-            inFile = new File(args[0]);
-            if (!inFile.canRead()) {
-               System.out.println("ERROR: could not open the specified file.");
-               return;
-            }
-            try {
-               size = Integer.parseInt(args[1].trim());
-            } catch (NumberFormatException e1) {
-               help(prog);
-               return;
-            }
-         }
-      } else if (args.length == 3) {
+      if (args.length == 3) {
          // Usage: java prog file size increasing
          inFile = new File(args[0]);
          if (!inFile.canRead()) {
-            System.out.println("ERROR: could not open the specified file.");
+            System.out
+                  .println("ERROR: could not open the specified input file.");
+            return;
+         }
+         outFile = new File(args[1]);
+         if (!outFile.canRead()) {
+            System.out
+                  .println("ERROR: could not open the specified output file.");
             return;
          }
          try {
-            size = Integer.parseInt(args[1].trim());
+            heapSize = Integer.parseInt(args[2].trim());
          } catch (NumberFormatException e1) {
-            help(prog);
-            return;
-         }
-         try {
-            increasing = (Integer.parseInt(args[2].trim()) == 0);
-         } catch (NumberFormatException e) {
             help(prog);
             return;
          }
@@ -88,32 +57,21 @@ public class Utils {
       // **********************************************************************
 
       // either create or read the list
-      if (inFile != null) {
-         list = Utils.read(inFile, size);
-      } else {
-         list = Utils.create(size);
-      }
+      list = Utils.read(inFile);
 
       // start timing and run the sort on the given list
       long stime = System.currentTimeMillis();
-      // Arrays.sort(list); // used for testing the built in sort
-      sorter.sort(list);
+      sorter.sort(list, heapSize);
       System.out.println("Time taken: " + (System.currentTimeMillis() - stime)
             / 100.0 + " secs");
 
       // write back out if read from a file
-      if (inFile != null) {
-         File outFile = new File(inFile.getAbsolutePath() + ".srt");
-         write(outFile, list);
-      }
+      write(outFile, list);
    }
 
    // prints out how to use this program
    public static void help(String prog) {
-      System.out.println("Usage: java " + prog + " file size incrasing");
-      System.out.println("       java " + prog + " file size");
-      System.out.println("       java " + prog + " size increasing");
-      System.out.println("       java " + prog + " size");
+      System.out.println("Usage: java " + prog + " in_file out_file heap_size");
       System.out.println();
    }
 
@@ -128,9 +86,26 @@ public class Utils {
    }
 
    // reads a list from the given file of the given size
-   public static double[] read(File file, int size) {
-      double[] list = new double[size];
+   public static double[] read(File file) {
       Scanner scanner = null;
+      int size = 0;
+      try {
+         scanner = new Scanner(file);
+         while (scanner.hasNext()) {
+            size++;
+         }
+         scanner.close();
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+         return null;
+      } catch (InputMismatchException e) {
+         // error, non-double element found in file
+         e.printStackTrace();
+         scanner.close();
+         return null;
+      }
+
+      double[] list = new double[size];
       int i = 0;
       try {
          scanner = new Scanner(file);
@@ -141,14 +116,7 @@ public class Utils {
          scanner.close();
       } catch (FileNotFoundException e) {
          e.printStackTrace();
-      } catch (InputMismatchException e) {
-         // error, non-double element found in file
-         // fill rest of array with zeros
-         for (; i < size; i++) {
-            list[i] = 0.0;
-         }
-         e.printStackTrace();
-         scanner.close();
+         return null;
       }
       return list;
    }
@@ -195,6 +163,24 @@ public class Utils {
       }
 
       if (buckets[mid] > value) {
+         return mid;
+      } else {
+         return max;
+      }
+   }
+
+   public static int binarySearch(double[] a, int min, int max, double value) {
+      int mid = min + (max - min) / 2;
+      while (mid != min) {
+         if (a[mid] > value) {
+            max = mid;
+         } else {
+            min = mid;
+         }
+         mid = min + (max - min) / 2;
+      }
+
+      if (a[mid] > value) {
          return mid;
       } else {
          return max;

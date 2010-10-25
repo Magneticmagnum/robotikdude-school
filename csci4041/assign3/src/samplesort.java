@@ -1,7 +1,7 @@
 public class samplesort implements SortingAlgorithm {
 
    public static void main(String[] args) {
-      samplesort sort = new samplesort(3);
+      samplesort sort = new samplesort();
       double[] array = {
             22, 7, 13, 18, 2, 17, 1, 14, 20, 6, 10, 24, 15, 9, 21, 3, 16, 19,
             23, 4, 11, 12, 5, 8
@@ -14,7 +14,7 @@ public class samplesort implements SortingAlgorithm {
       }
       System.out.println(array[array.length - 1]);
 
-      sort.sort(array);
+      sort.sort(array, 3);
 
       System.out.print("List After: ");
       for (int i = 0; i < array.length - 1; i++) {
@@ -24,17 +24,12 @@ public class samplesort implements SortingAlgorithm {
    }
 
 
-   private int p;
-
-   public samplesort(int p) {
-      this.p = p;
-   }
 
    @Override
-   public void sort(double[] a) {
+   public void sort(double[] a, int p) {
       QuickSort qsort = new QuickSort();
       int n = a.length;
-      int[] splits = getSplitIndexes(a.length);
+      int[] splits = getSplitIndexes(a.length, p);
 
       System.out.print("List: ");
       for (int i = 0; i < p; i++) {
@@ -111,7 +106,7 @@ public class samplesort implements SortingAlgorithm {
       }
    }
 
-   private int[] getSplitIndexes(int length) {
+   private int[] getSplitIndexes(int length, int p) {
       int[] splits = new int[p + 1];
       System.out.print("Splits (" + length + ", " + p + ") : ");
 
