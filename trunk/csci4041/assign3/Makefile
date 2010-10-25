@@ -5,8 +5,8 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-	naive.java \
-	smart.java
+	ssnaive.java \
+	sssmart.java
 
 default: classes
 

@@ -15,60 +15,6 @@ public class Utils {
    private Utils() {
    }
 
-   // actually runs the sort test
-   public static void runSort(String prog, String[] args,
-         SortingAlgorithm sorter) {
-
-      // defaults
-      File inFile = null;
-      File outFile = null;
-      int heapSize = 100;
-      double[] list = null;
-
-      // **********************************************************************
-      // start argument parsing
-      // **********************************************************************
-      if (args.length == 3) {
-         // Usage: java prog file size increasing
-         inFile = new File(args[0]);
-         if (!inFile.canRead()) {
-            System.out
-                  .println("ERROR: could not open the specified input file.");
-            return;
-         }
-         outFile = new File(args[1]);
-         if (!outFile.canRead()) {
-            System.out
-                  .println("ERROR: could not open the specified output file.");
-            return;
-         }
-         try {
-            heapSize = Integer.parseInt(args[2].trim());
-         } catch (NumberFormatException e1) {
-            help(prog);
-            return;
-         }
-      } else {
-         help(prog);
-         return;
-      }
-      // **********************************************************************
-      // end argument parsing
-      // **********************************************************************
-
-      // either create or read the list
-      list = Utils.read(inFile);
-
-      // start timing and run the sort on the given list
-      long stime = System.currentTimeMillis();
-      sorter.sort(list, heapSize);
-      System.out.println("Time taken: " + (System.currentTimeMillis() - stime)
-            / 100.0 + " secs");
-
-      // write back out if read from a file
-      write(outFile, list);
-   }
-
    // prints out how to use this program
    public static void help(String prog) {
       System.out.println("Usage: java " + prog + " in_file out_file heap_size");
@@ -136,8 +82,7 @@ public class Utils {
       }
    }
 
-
-
+   // returns the splitting indexes for an array of size n
    public static int[] getSplitIndexes(double n, int p) {
       int[] splits = new int[p + 1];
       double start = 0;
@@ -149,6 +94,7 @@ public class Utils {
       return splits;
    }
 
+   // returns the resulting index from a binary search into an array
    public static int binarySearch(double[] buckets, double value) {
       int min = 0;
       int max = buckets.length;
@@ -169,6 +115,7 @@ public class Utils {
       }
    }
 
+   // returns the resulting index between min and max from a binary search into an array
    public static int binarySearch(double[] a, int min, int max, double value) {
       int mid = min + (max - min) / 2;
       while (mid != min) {
@@ -187,6 +134,7 @@ public class Utils {
       }
    }
 
+   // inserts, using insertion sort, a Link into the head of a linked-list
    public static Link insertLink(Link head, double value) {
       Link iter = head;
       if (iter == null) {
@@ -202,6 +150,7 @@ public class Utils {
       return head;
    }
 
+   // heapify method from heap sort, taken from the book
    public static void heapify(PWayMerge[] heap, int heapSize, int i, double[] a) {
       int l = 2 * i;
       int r = l + 1;
