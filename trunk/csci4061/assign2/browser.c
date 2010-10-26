@@ -166,8 +166,8 @@ int main() {
                   else if (new_req_tab.type == TAB_KILLED) {
                     printf("closing tab...\n");
                     process_all_gtk_events();
-                    // close(channel[new_req.req.killed_req.tab_index].parent_to_child_fd[0]);
-                    // close(channel[new_req.req.killed_req.tab_index].child_to_parent_fd[1]);
+                    close(channel[tab_index].parent_to_child_fd[0]);
+                    close(channel[tab_index].child_to_parent_fd[1]);
                     kill_tab = 1;
                   } else if (new_req_tab.type == CREATE_TAB) {
                     // error? ignore
@@ -217,11 +217,13 @@ int main() {
             // error? no type specified
           }
         } else {
-          // else [if (nread == -1 && errno == EAGAIN)] [if (nread > 0)]
           // error? fd is closed
-        }
+        } // end else [if (nread == -1 && errno == EAGAIN)] [if (nread > 0)]
+
       } // for (i = 0; i < tab_index; i++)
+
     } // end while (open_tabs > 0)
+
   } // end else [if (pid == 0)]
 
   return 0;
