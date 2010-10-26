@@ -155,7 +155,7 @@ int main() {
                 if (nread_tab == -1 && errno == EAGAIN) {
                   usleep(10);
                   // printf("tab %i got no messages...\n", tab_index);
-                } else {
+                } else if (nread_tab > 0) {
                   // printf("tab %i got a message!\n", tab_index);
                   // NEW URI PASSED TO TAB ************************************
                   if (new_req_tab.type == NEW_URI_ENTERED) {
@@ -174,6 +174,8 @@ int main() {
                   } else {
                     // error? no type specified
                   }
+                } else {
+                  // read didn't get any data.
                 }
                 process_single_gtk_event();
               }
