@@ -39,6 +39,7 @@ public class Utils {
          scanner = new Scanner(file);
          while (scanner.hasNext()) {
             size++;
+            scanner.nextDouble();
          }
          scanner.close();
       } catch (FileNotFoundException e) {
@@ -115,7 +116,8 @@ public class Utils {
       }
    }
 
-   // returns the resulting index between min and max from a binary search into an array
+   // returns the resulting index between min and max from a binary search into
+   // an array
    public static int binarySearch(double[] a, int min, int max, double value) {
       int mid = min + (max - min) / 2;
       while (mid != min) {
@@ -132,22 +134,6 @@ public class Utils {
       } else {
          return max;
       }
-   }
-
-   // inserts, using insertion sort, a Link into the head of a linked-list
-   public static Link insertLink(Link head, double value) {
-      Link iter = head;
-      if (iter == null) {
-         head = new Link(value);
-      } else if (value < iter.value) {
-         head = new Link(value, head);
-      } else {
-         while (iter.next != null && iter.next.value < value) {
-            iter = iter.next;
-         }
-         iter.next = new Link(value, iter.next);
-      }
-      return head;
    }
 
    // heapify method from heap sort, taken from the book
