@@ -1,12 +1,8 @@
 import java.io.File;
 
 /**
- * CSci4041 F2010 Assignment 3
- * section: 3
- * login: norma272
- * date: 10/25/10
- * name: Brian Norman
- * id: 4332223
+ * CSci4041 F2010 Assignment 3 section: 3 login: norma272 date: 10/25/10 name:
+ * Brian Norman id: 4332223
  */
 public class ssnaive {
 
@@ -26,24 +22,18 @@ public class ssnaive {
          if (!inFile.canRead()) {
             System.out
                   .println("ERROR: could not open the specified input file.");
-            Utils.help("naive");
+            Utils.help("ssnaive");
             return;
          }
          outFile = new File(args[1]);
-         if (!outFile.canRead()) {
-            System.out
-                  .println("ERROR: could not open the specified output file.");
-            Utils.help("naive");
-            return;
-         }
          try {
             heapSize = Integer.parseInt(args[2].trim());
          } catch (NumberFormatException e1) {
-            Utils.help("naive");
+            Utils.help("ssnaive");
             return;
          }
       } else {
-         Utils.help("naive");
+         Utils.help("ssnaive");
          return;
       }
       // **********************************************************************
@@ -51,7 +41,8 @@ public class ssnaive {
       // either create or read the list
       list = Utils.read(inFile);
 
-      int p = heapSize / list.length;
+      int p = 2 * list.length / heapSize;
+      System.out.println("Using a p value of: " + p);
 
       // start timing and run the sort on the given list
       long stime = System.currentTimeMillis();
@@ -68,7 +59,7 @@ public class ssnaive {
    public void sort(double[] a, int p) {
       QuickSort qsort = new QuickSort();
 
-      
+
       long stime = System.currentTimeMillis();
       // split the array into p subarrays and sort them
       // size : n/p
@@ -76,8 +67,8 @@ public class ssnaive {
       for (int i = 0; i < p; i++) {
          qsort.sort(a, splits[i], splits[i + 1] - 1);
       }
-      System.out.println("Time taken (sorting n/p): " + (System.currentTimeMillis() - stime)
-            / 100.0 + " secs");
+      System.out.println("Time taken (sorting n/p): "
+            + (System.currentTimeMillis() - stime) / 100.0 + " secs");
 
 
       stime = System.currentTimeMillis();
@@ -94,40 +85,43 @@ public class ssnaive {
       }
       qsort.sort(sample);
 
-      
+
       // select p-1 elements from that separate array
       // size : 2*p^2 + p
-      double[] buckets = new double[p];
+      double[] bucketSplits = new double[p];
       double space = (double) sample.length / p;
       for (int i = 0; i < p - 1; i++) {
-         buckets[i] = sample[(int) ((i + 1) * space)];
+         bucketSplits[i] = sample[(int) ((i + 1) * space)];
       }
-      buckets[p - 1] = Double.POSITIVE_INFINITY;
-      System.out.println("Time taken (sample): " + (System.currentTimeMillis() - stime)
-            / 100.0 + " secs");
+      bucketSplits[p - 1] = Double.POSITIVE_INFINITY;
+      System.out.println("Time taken (sample): "
+            + (System.currentTimeMillis() - stime) / 100.0 + " secs");
 
 
       stime = System.currentTimeMillis();
       // place each element from the array into the
       // appropriate bucket using binary search
-      // size : n
-      Link[] linkedBuckets = new Link[p];
+      // size : 2n/p
+      double[][] buckets = new double[p][2 * a.length / p];
+      int[] bucketSize = new int[p];
       for (int i = 0; i < a.length; i++) {
-         int j = Utils.binarySearch(buckets, a[i]);
-         linkedBuckets[j] = Utils.insertLink(linkedBuckets[j], a[i]);
+         int j = Utils.binarySearch(bucketSplits, a[i]);
+         buckets[j][bucketSize[j]++] = a[i];
       }
-      System.out.println("Time taken (buckets): " + (System.currentTimeMillis() - stime)
-            / 100.0 + " secs");
-      
+      // sort the buckets with quick sort
+      for (int i = 0; i < p; i++) {
+         qsort.sort(buckets[i], 0, bucketSize[i] - 1);
+      }
+      System.out.println("Time taken (buckets): "
+            + (System.currentTimeMillis() - stime) / 100.0 + " secs");
+
 
       // read each bucket back into the array
       // size : n
-      int i = 0;
-      for (int bucket = 0; bucket < buckets.length; bucket++) {
-         Link l = linkedBuckets[bucket];
-         while (l != null) {
-            a[i++] = l.value;
-            l = l.next;
+      int index = 0;
+      for (int i = 0; i < buckets.length; i++) {
+         for (int j = 0; j < bucketSize[i]; j++) {
+            a[index++] = buckets[i][j];
          }
       }
 
