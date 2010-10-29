@@ -48,7 +48,6 @@ void uri_entered_cb(GtkWidget* entry, gpointer data) {
 }
 
 /*
-
  * Name:		new_tab_created_cb
  * Input arguments:	'button' - whose click generated this callback
  *			'data' - auxillary data passed along for handling
@@ -61,9 +60,7 @@ void uri_entered_cb(GtkWidget* entry, gpointer data) {
  *			which then creates a new child process for creating
  *			and managing this new tab.
  */
-void new_tab_created_cb(GtkButton *button, gpointer data)
-
-{
+void new_tab_created_cb(GtkButton *button, gpointer data) {
   if (!data)
     return;
   int tab_index = ((browser_window*) data)->tab_index;
@@ -123,10 +120,10 @@ int main() {
           // printf("router got no messages...\n");
           usleep(10);
         } else if (nread > 0) {
-          printf("router got a message!\n");
+          //printf("router got a message!\n");
           // CREATE TAB *******************************************************
           if (new_req.type == CREATE_TAB) {
-            printf("router creating tab...\n");
+            //printf("router creating tab...\n");
             pipe(channel[tab_index].parent_to_child_fd);
             pipe(channel[tab_index].child_to_parent_fd);
 
@@ -135,7 +132,7 @@ int main() {
               // **************************************************************
               // TAB PROCESS
               // **************************************************************
-              printf("tab created.\n");
+              //printf("tab created.\n");
               comm_channel tab_comm = channel[tab_index];
               close(tab_comm.parent_to_child_fd[1]);
               close(tab_comm.child_to_parent_fd[0]);
@@ -159,12 +156,12 @@ int main() {
                   // printf("tab %i got a message!\n", tab_index);
                   // NEW URI PASSED TO TAB ************************************
                   if (new_req_tab.type == NEW_URI_ENTERED) {
-                    printf("new uri requested.\n");
+                    //printf("new uri requested.\n");
                     render_web_page_in_tab(new_req_tab.req.uri_req.uri, tab);
                   }
                   // TAB ASKED TO TERMINATE ***********************************
                   else if (new_req_tab.type == TAB_KILLED) {
-                    printf("closing tab...\n");
+                    //printf("closing tab...\n");
                     process_all_gtk_events();
                     close(channel[tab_index].parent_to_child_fd[0]);
                     close(channel[tab_index].child_to_parent_fd[1]);
@@ -180,7 +177,7 @@ int main() {
                 process_single_gtk_event();
               }
 
-              printf("tab %i closed.\n", tab_index);
+              //printf("tab %i closed.\n", tab_index);
               exit(0);
               // **************************************************************
               // END TAB PROCESS
@@ -199,20 +196,38 @@ int main() {
           }
           // NEW URI ENTERED **************************************************
           else if (new_req.type == NEW_URI_ENTERED) {
-            printf("passing uri message to child...\n");
+            //printf("passing uri message to child...\n");
             write(channel[new_req.req.uri_req.render_in_tab].parent_to_child_fd[1], &new_req,
                 sizeof(child_req_to_parent));
           }
           // TAB KILLED *******************************************************
           else if (new_req.type == TAB_KILLED) {
-            printf("router closing tab %i...\n", new_req.req.killed_req.tab_index);
-            printf("tabs left: %i.\n", open_tabs - 1);
+            //printf("router closing tab %i...\n", new_req.req.killed_req.tab_index);
+            //printf("tabs left: %i.\n", open_tabs - 1);
             write(channel[new_req.req.killed_req.tab_index].parent_to_child_fd[1], &new_req,
                 sizeof(child_req_to_parent));
 
             close(channel[new_req.req.killed_req.tab_index].parent_to_child_fd[1]);
             close(channel[new_req.req.killed_req.tab_index].child_to_parent_fd[0]);
             open_tabs--;
+
+            if (new_req.req.killed_req.tab_index == 0 && open_tabs > 0) {
+              // close other browsers...?
+              //printf("INFO: closing other tabs...\n");
+              int i;
+              for (i = 1; i < UNRECLAIMED_TAB_COUNTER; i++) {
+                //printf("INFO: closing tab %i\n", i);
+                child_req_to_parent new_req;
+                new_req.type = TAB_KILLED;
+                new_req.req.killed_req.tab_index = i;
+                write(channel[i].parent_to_child_fd[1], &new_req, sizeof(child_req_to_parent));
+
+                close(channel[i].parent_to_child_fd[1]);
+                close(channel[i].child_to_parent_fd[0]);
+              }
+              open_tabs = 0;
+            }
+
           } else {
             // error? no type specified
           }
