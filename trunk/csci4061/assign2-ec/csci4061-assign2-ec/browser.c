@@ -10,6 +10,7 @@
 #include <sys/ipc.h>
 
 extern int errno;
+// This is used to hold the ID of the shared segment created by the ROUTER process
 extern int shared_bookmarks;
 comm_channel channel[UNRECLAIMED_TAB_COUNTER];
 
@@ -25,7 +26,6 @@ comm_channel channel[UNRECLAIMED_TAB_COUNTER];
  *			and sends the browsing request to the router(/parent)
  *			process.
  */
-
 void uri_entered_cb(GtkWidget* entry, gpointer data) {
   if (!data)
     return;
@@ -35,22 +35,22 @@ void uri_entered_cb(GtkWidget* entry, gpointer data) {
   int tab_index = query_tab_id_for_request(entry, data);
   if (tab_index <= 0) {
     //Append code for error handling
+    printf("ERROR! please enter a tab index that exists.");
+  } else {
+    // Get the URL.
+    char* uri = get_entered_uri(entry);
+
+    // Prepare 'request' packet to send to router (/parent) process.
+    // Append your code here
+    child_req_to_parent new_req;
+    new_req.type = NEW_URI_ENTERED;
+    new_req.req.uri_req.render_in_tab = tab_index;
+    strcpy(new_req.req.uri_req.uri, uri);
+    write(channel.child_to_parent_fd[1], &new_req, sizeof(child_req_to_parent));
   }
-
-  // Get the URL.
-  char* uri = get_entered_uri(entry);
-
-  // Prepare 'request' packet to send to router (/parent) process.
-  // Append your code here
-  child_req_to_parent new_req;
-  new_req.type = NEW_URI_ENTERED;
-  new_req.req.uri_req.render_in_tab = tab_index;
-  strcpy(new_req.req.uri_req.uri, uri);
-  write(channel.child_to_parent_fd[1], &new_req, sizeof(child_req_to_parent));
 }
 
 /*
-
  * Name:		new_tab_created_cb
  * Input arguments:	'button' - whose click generated this callback
  *			'data' - auxillary data passed along for handling
@@ -79,6 +79,7 @@ void new_tab_created_cb(GtkButton *button, gpointer data)
   new_req.req.new_tab_req.tab_index = tab_index;
   write(channel.child_to_parent_fd[1], &new_req, sizeof(child_req_to_parent));
 }
+
 /*
  * Name:                bookmark_curr_page_cb
  * Input Arguments:     data - pointer to 'browser_window' data
@@ -98,6 +99,8 @@ void bookmark_curr_page_cb(void *data) {
   const char* curr_webpage = get_current_uri(b_window);
 
   //Append your code here
+  // The following code is used to populate a new 'bookmarks' data structrue and
+  // store it into the shared membery.  The count of bookmarked webpages is also incremented 
   bookmarks* bms = (bookmarks*) shmat(shared_bookmarks, NULL, 0);
   if (bms == (void*) -1) {
     printf("ERROR: Unable to attach to shared memory. ERRNO CODE: %i\n", errno);
@@ -116,14 +119,15 @@ int main() {
   // BOOKMARK CODE
   // **************************************************************************
   int BOOKMARK_KEY = 100;
+  // the shared-member segment is created for storing bookmarks
   shared_bookmarks = shmget(BOOKMARK_KEY, MAX_BOOKMARKS * sizeof(bookmarks), 0777 | IPC_CREAT);
   if (shared_bookmarks == -1) {
-    printf("ERROR: Unable to create shared memory. ERRNO CODE: %i\n", errno);
+    perror("Unable to create shared memory. ERRNO CODE: %i\n", errno);
     exit(1);
   }
   bookmarks* bms = (bookmarks*) shmat(shared_bookmarks, NULL, 0);
   if (bms == (void*) -1) {
-    printf("ERROR: Unable to attach to shared memory. ERRNO CODE: %i\n", errno);
+    perror("Unable to attach to shared memory. ERRNO CODE: %i\n", errno);
     exit(1);
   }
   bms[0].bookmarks_count = 0;
@@ -175,10 +179,10 @@ int main() {
           // printf("router got no messages...\n");
           usleep(10);
         } else if (nread > 0) {
-          printf("INFO: router got a message!\n");
+          // printf("INFO: router got a message!\n");
           // CREATE TAB *******************************************************
           if (new_req.type == CREATE_TAB) {
-            printf("INFO: router creating tab...\n");
+            // printf("INFO: router creating tab...\n");
             pipe(channel[tab_index].parent_to_child_fd);
             pipe(channel[tab_index].child_to_parent_fd);
 
@@ -187,7 +191,7 @@ int main() {
               // **************************************************************
               // TAB PROCESS
               // **************************************************************
-              printf("INFO: tab created.\n");
+              // printf("INFO: tab created.\n");
               comm_channel tab_comm = channel[tab_index];
               close(tab_comm.parent_to_child_fd[1]);
               close(tab_comm.child_to_parent_fd[0]);
@@ -211,28 +215,33 @@ int main() {
                   // printf("tab %i got a message!\n", tab_index);
                   // NEW URI PASSED TO TAB ************************************
                   if (new_req_tab.type == NEW_URI_ENTERED) {
-                    printf("INFO: new uri requested.\n");
+                    // printf("INFO: new uri requested.\n");
                     render_web_page_in_tab(new_req_tab.req.uri_req.uri, tab);
                   }
                   // TAB ASKED TO TERMINATE ***********************************
                   else if (new_req_tab.type == TAB_KILLED) {
-                    printf("INFO: closing tab...\n");
+                    // printf("INFO: closing tab...\n");
                     process_all_gtk_events();
                     close(channel[tab_index].parent_to_child_fd[0]);
                     close(channel[tab_index].child_to_parent_fd[1]);
                     kill_tab = 1;
                   } else if (new_req_tab.type == CREATE_TAB) {
-                    // error? ignore
+                    // ignore
                   } else {
                     // error? no type specified
+                    perror("No type is specified or not correctly specified, closing tab");
+                    close(channel[tab_index].parent_to_child_fd[0]);
+                    close(channel[tab_index].child_to_parent_fd[1]);
+                    kill_tab = 1;
                   }
                 } else {
                   // read didn't get any data.
+                  perror("No data is read in");
                 }
                 process_single_gtk_event();
               }
 
-              printf("INFO: tab %i closed.\n", tab_index);
+              // printf("INFO: tab %i closed.\n", tab_index);
               exit(0);
               // **************************************************************
               // END TAB PROCESS
@@ -251,27 +260,27 @@ int main() {
           }
           // NEW URI ENTERED **************************************************
           else if (new_req.type == NEW_URI_ENTERED) {
-            printf("INFO: passing uri message to child...\n");
+            // printf("INFO: passing uri message to child...\n");
             write(channel[new_req.req.uri_req.render_in_tab].parent_to_child_fd[1], &new_req,
                 sizeof(child_req_to_parent));
           }
           // TAB KILLED *******************************************************
           else if (new_req.type == TAB_KILLED) {
-            printf("INFO: router closing tab %i...\n", new_req.req.killed_req.tab_index);
+            // printf("INFO: router closing tab %i...\n", new_req.req.killed_req.tab_index);
             write(channel[new_req.req.killed_req.tab_index].parent_to_child_fd[1], &new_req,
                 sizeof(child_req_to_parent));
 
             close(channel[new_req.req.killed_req.tab_index].parent_to_child_fd[1]);
             close(channel[new_req.req.killed_req.tab_index].child_to_parent_fd[0]);
             open_tabs--;
-            printf("INFO: tabs left: %i.\n", open_tabs);
+            // printf("INFO: tabs left: %i.\n", open_tabs);
 
             if (new_req.req.killed_req.tab_index == 0 && open_tabs > 0) {
               // close other browsers...?
-              printf("INFO: closing other tabs...\n");
+              // printf("INFO: closing other tabs...\n");
               int i;
               for (i = 1; i < UNRECLAIMED_TAB_COUNTER; i++) {
-                printf("INFO: closing tab %i\n", i);
+                // printf("INFO: closing tab %i\n", i);
                 child_req_to_parent new_req;
                 new_req.type = TAB_KILLED;
                 new_req.req.killed_req.tab_index = i;
@@ -284,9 +293,13 @@ int main() {
             }
           } else {
             // error? no type specified
+            perror("Type not specified or not specified correctly");
           }
         } else {
           // error? fd is closed
+          // perror("File descriptor is closed");
+          // not an error, if tab one is closed, it's file descriptors will still try and
+          // be read as part of the loop.
         } // end else [if (nread == -1 && errno == EAGAIN)] [if (nread > 0)]
 
       } // for (i = 0; i < tab_index; i++)
