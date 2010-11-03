@@ -1,0 +1,15 @@
+Described below are the different logging levels used and a description when
+they are used.
+
+DEBUG:
+  Used for general debugging purposes, when printing messages about the flow of
+  the program or variable values at certain points in the run process.
+
+INFO:
+  This is the default level for logging. Messages at the INFO level are
+  messages that are required by the program but do not fall into the ERROR
+  category and are not part of the debugging.
+
+ERROR:
+  Used when an error occurs. Usually the error is properly handled by the
+  program but an error message is printed to the log file.
