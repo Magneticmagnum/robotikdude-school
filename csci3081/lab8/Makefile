@@ -1,10 +1,14 @@
 # makefile for 3081 project phase 1
 
+OS = $(shell uname)
 CPP = g++
 CXX_DIR = ../cxxtest
 CXX = $(CXX_DIR)/cxxtestgen.pl
 CFLAGS = -fprofile-arcs -ftest-coverage
-LFLAGS = $(CFLAGS) -lgcov -llog4cxx -lapr-1 -laprutil-1
+LFLAGS = $(CFLAGS) -L/usr/local/lib -lgcov -lapr-1 -laprutil-1 -llog4cxx
+ifeq (CYGWIN, $(findstring CYGWIN,$(OS)))
+	LFLAGS += -lapr-1.dll -laprutil-1.dll
+endif
 
 # Not sure what these do but they make it work...
 .SUFFIXES : .o .cpp .c
