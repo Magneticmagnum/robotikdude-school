@@ -10,5 +10,4 @@ web_server_http: server.o util-http.o
 server.o: server.c
 
 clean:
-	rm web_server_http
-
+	rm server.o web_server_http
