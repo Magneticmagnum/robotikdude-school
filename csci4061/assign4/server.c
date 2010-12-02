@@ -203,13 +203,13 @@ void* worker(void* arg)
       //       int r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
       {
         struct stat buffer;
-        int status = stat(element.filename, &buffer);
+        int status = stat(strcat(location, element.filename), &buffer);
         char* cwd = getcwd(NULL, 0);
         printf("Worker %i: CWD: %s\n", threadID, cwd);
         free(cwd);
         off_t size = buffer.st_size;
         printf("Worker %i: getting stat on %s, status: %i, size: %lld,"
-          " blocks: %lld.\n", threadID, element.filename, status, size);
+          " blocks: %lld.\n", threadID, strcat(location, element.filename), status, size);
       }
 
       //      char* buffer = (char*) malloc(sizeof(char) * 1024 * 80); // 80 KB
