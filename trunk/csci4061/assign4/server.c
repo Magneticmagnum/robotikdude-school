@@ -223,18 +223,55 @@ int main(int argc, char** argv)
 
   int port = atoi(argv[1]);
   if (port < 1025 || port > 65535) {
-    printf("USAGE: port must be between 1025 and 65535.");
+    printf("USAGE: <port> must be between 1025 and 65535.");
     usage(argv[0]);
     exit(1);
   }
 
   char* path = argv[2];
+  // check directory path
+
   int nDispatch = atoi(argv[3]);
+  if (nDispatch <= 0 || nDispatch > MAX_DISPATCH) {
+    printf("USAGE: <num_dispatch> must be between 1 and %i.", MAX_DISPATCH);
+    usage(argv[0]);
+    exit(1);
+  }
+
   int nWorker = atoi(argv[4]);
+  if (nWorker <= 0 || nWorker > MAX_WORKER) {
+    printf("USAGE: <num_worker> must be between 1 and %i.", MAX_WORKER);
+    usage(argv[0]);
+    exit(1);
+  }
+
   int nPrefetch = atoi(argv[5]);
+  if (nPrefetch <= 0 || nPrefetch > MAX_PREFETCHER) {
+    printf("USAGE: <num_prefetch> must be between 1 and %i.", MAX_PREFETCHER);
+    usage(argv[0]);
+    exit(1);
+  }
+
   int queueLength = atoi(argv[6]);
+  if (queueLength <= 0 || queueLength > MAX_QUEUE_LEN) {
+    printf("USAGE: <qlen> must be between 1 and %i.", MAX_QUEUE_LEN);
+    usage(argv[0]);
+    exit(1);
+  }
+
   int opMode = atoi(argv[7]);
+  if (opMode < 0 || opMode > 3) {
+    printf("USAGE: <mode> must be 0 (FCFS), 1 (CRF), or 3 (SFF).");
+    usage(argv[0]);
+    exit(1);
+  }
+
   int cacheSize = atoi(argv[8]);
+  if (cacheSize <= 0 || cacheSize > MAX_CACHE_SIZE) {
+    printf("USAGE: <cache_entries> must be between 1 and %i.", MAX_CACHE_SIZE);
+    usage(argv[0]);
+    exit(1);
+  }
 
   pthread_t dispathThreads[MAX_DISPATCH];
   pthread_t workerThreads[MAX_WORKER];
@@ -270,6 +307,7 @@ int main(int argc, char** argv)
     pthread_join(prefetchThreads[i], NULL);
   }
 
+  return 0;
 }
 
 void usage(char* prog)
