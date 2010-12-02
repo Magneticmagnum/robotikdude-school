@@ -49,6 +49,7 @@ typedef struct
 } cache_t;
 
 static int mode;
+static char* location;
 
 static pthread_mutex_t queue_access = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t queue_full = PTHREAD_COND_INITIALIZER;
@@ -202,7 +203,7 @@ void* worker(void* arg)
       // int r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
       {
         struct stat buffer;
-        int status = stat(element.filename, &buffer);
+        int status = fstat(element.fd, &buffer);
         off_t size = buffer.st_size;
         printf("Worker %i: getting stat, status: %i, size: %lld.\n", threadID, status, size);
       }
@@ -336,6 +337,7 @@ int main(int argc, char** argv)
   pthread_t prefetchThreads[MAX_PREFETCHER];
 
   init(port);
+  location = path;
   queue_len = queueLength;
   cache_size = cacheSize;
   mode = opMode;
