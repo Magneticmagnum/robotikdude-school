@@ -4,8 +4,8 @@ LDFLAGS = -lpthread
 
 all: web_server_http
 
-web_server_http: server.o util-http.o
-	${CC} ${LDFLAGS} -o server.o util-http.o
+web_server_http: server.c util-http.o
+	${CC} ${CFLAGS} ${LDFLAGS} -o web_server_http server.c util-http.o
 
 server.o: server.c
 
