@@ -14,6 +14,10 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 // The maximum number of dispatch threads will be 100
 #define MAX_DISPATCH   100
 // The maximum number of worker threads will be 100
@@ -128,8 +132,9 @@ void* worker(void* arg)
       pthread_cond_wait(&queue_empty, &queue_access);
     }
 
-    printf("Worker %i: removing request from the queue.\n", threadID);
     queue_t element = queue[queue_out % queue_len];
+    printf("Worker %i: removing request from the queue, fd: %i,"
+      " filename %s.\n", threadID, element.fd, element.filename);
 
     if (mode == 2) { // SFF
       printf("Worker %i: mode is SSF.\n", threadID);
@@ -168,10 +173,41 @@ void* worker(void* arg)
       }
 
       // FCFS
+
+      // get the content type of the file
+      char* s = strtok(element.filename, ".");
+      char* last = NULL;
+      // get last string before .
+      while (s != NULL) {
+        last = s;
+        s = strtok(NULL, ".");
+        if (s != NULL)
+          last = s;
+      }
+      char* content_type;
+      if (strcmp(last, "html") == 0) {
+        content_type = CONTENT_TYPE_HTML;
+      }
+      else if (strcmp(last, "gif") == 0) {
+        content_type = CONTENT_TYPE_GIF;
+      }
+      else if (strcmp(last, "jpeg") == 0 || strcmp(last, "jpg") == 0) {
+        content_type = CONTENT_TYPE_JPG;
+      }
+      else {
+        content_type = CONTENT_TYPE_DEFAULT;
+      }
+      printf("Worker %i: content type: %s\n", threadID, content_type);
+
       // int r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
+      {
+        struct stat buffer;
+        int status = stat(element.filename, &buffer);
+        printf("Worker %i: getting stat, size: %i.\n", threadID, buffer.st_size);
+      }
+      printf("Worker %i: returning request to client.\n", threadID);
       //      int r = return_result(element.fd, NULL, element.filename, BUFFER_SIZE);
 
-      printf("Worker %i: removing request from the queue.\n", threadID);
       //      if (queue_pre_in - queue_pre_out < queue_len) {
       //        queue_pre[queue_pre_in] = element;
       //        queue_pre_in++;
