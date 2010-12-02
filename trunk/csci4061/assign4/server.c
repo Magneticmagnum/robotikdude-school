@@ -106,7 +106,7 @@ void* dispatch(void* arg)
 // worker thread
 void* worker(void* arg)
 {
-  int threadID = (int) arg;
+  int threadID = *(int*)arg;
 
   while (1) {
     pthread_mutex_lock(&queue_access);
