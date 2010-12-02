@@ -121,19 +121,24 @@ void* worker(void* arg)
 
   while (1) {
     pthread_mutex_lock(&queue_access);
+    printf("Worker %i: locking queue\n", threadID);
 
     while (queue_in - queue_out <= 0) { // queue empty
+      printf("Worker %i: queue is empty.\n", threadID);
       pthread_cond_wait(&queue_empty, &queue_access);
     }
 
+    printf("Worker %i: removing request from the queue.\n", threadID);
     queue_t element = queue[queue_out % queue_len];
 
     if (mode == 2) { // SFF
+      printf("Worker %i: mode is SSF.\n", threadID);
 
     }
     else { // CRF and FCFS
       int contains = 0;
       if (mode == 1) { // CRF
+        printf("Worker %i: mode is CRF.\n", threadID);
         int i;
         int j;
         pthread_mutex_lock(&cache_access);
@@ -151,34 +156,37 @@ void* worker(void* arg)
         pthread_mutex_unlock(&cache_access);
       }
       else {
-        int i;
-        pthread_mutex_lock(&cache_access);
-        for (i = cache_out - 1; i >= cache_in && !contains; i--) {
-          if (strcmp(element.filename, cache[i].result) == 0) {
-            contains = 1;
-          }
-        }
-        pthread_mutex_unlock(&cache_access);
+        printf("Worker %i: mode is FCFS.\n", threadID);
+        //        int i;
+        //        pthread_mutex_lock(&cache_access);
+        //        for (i = cache_out - 1; i >= cache_in && !contains; i--) {
+        //          if (strcmp(element.filename, cache[i].result) == 0) {
+        //            contains = 1;
+        //          }
+        //        }
+        //        pthread_mutex_unlock(&cache_access);
       }
 
       // FCFS
-      int r;
-      // r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
-      r = return_result(element.fd, NULL, element.filename, BUFFER_SIZE);
+      // int r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
+      //      int r = return_result(element.fd, NULL, element.filename, BUFFER_SIZE);
 
-      if (queue_pre_in - queue_pre_out < queue_len) {
-        queue_pre[queue_pre_in] = element;
-        queue_pre_in++;
-        pthread_cond_broadcast(&queue_pre_empty); // prefetcher queue no longer empty
-      }
-      else {
-        free(element.filename);
-      }
+      printf("Worker %i: removing request from the queue.\n", threadID);
+      //      if (queue_pre_in - queue_pre_out < queue_len) {
+      //        queue_pre[queue_pre_in] = element;
+      //        queue_pre_in++;
+      //        pthread_cond_broadcast(&queue_pre_empty); // prefetcher queue no longer empty
+      //      }
+      //      else {
+      printf("Worker %i: freeing filename memory.\n", threadID);
+      free(element.filename);
+      //      }
       queue_out++;
 
       pthread_cond_broadcast(&queue_full); // queue no longer full
     }
 
+    printf("Worker %i: unlocking queue\n", threadID);
     pthread_mutex_unlock(&queue_access);
   }
 }
