@@ -78,36 +78,37 @@ void* dispatch(void* arg)
     char* file;
     int r;
 
+    printf("Dispatch %i: attempting to accept connection...\n", threadID);
     int fd = accept_connection();
     if (fd < 0) {
-      printf("Connection not accepted in thread %i, exiting.\n", threadID);
+      printf("Dispatch %i: connection not accepted , exiting.\n", threadID);
       pthread_exit(NULL);
     }
-    printf("Connection accepted in thread %i, fd: %i\n", threadID, fd);
+    printf("Dispatch %i: connection accepted, fd: %i\n", threadID, fd);
 
     file = (char*) malloc(sizeof(char) * BUFFER_SIZE);
     r = get_request(fd, file);
     if (r == 0) {
-      printf("Valid request in thread %i, file: %s\n", threadID, file);
+      printf("Dispatch %i: valid request, file: %s\n", threadID, file);
 
       pthread_mutex_lock(&queue_access);
-      printf("Thread %i locking queue.\n", threadID);
+      printf("Dispatch %i: locking queue.\n", threadID);
 
       while (queue_in - queue_out >= queue_len) { // queue full
-        printf("Queue is full for thread %i.\n", threadID);
+        printf("Dispatch %i: queue is full.\n", threadID);
         pthread_cond_wait(&queue_full, &queue_access);
       }
       queue[queue_in % queue_len].fd = fd;
       queue[queue_in % queue_len].filename = file;
       queue_in++;
-      printf("Request has been added to the queue by thread %i", threadID);
+      printf("Dispatch %i: request has been added to the queue.\n", threadID);
       pthread_cond_broadcast(&queue_empty); // queue no longer empty
 
-      printf("Thread %i unlocking queue.\n", threadID);
+      printf("Dispatch %i: unlocking queue.\n", threadID);
       pthread_mutex_unlock(&queue_access);
     }
     else {
-      printf("Invalid request in thread %i, freeing memory.\n", threadID);
+      printf("Dispatch %i: invalid request, freeing memory.\n", threadID);
       free(file);
     }
   }
