@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -D_REENTRANT
-LDFLAGS = -lpthread
+LDFLAGS = -lpthread -lnsl
 
 all: web_server_http
 
