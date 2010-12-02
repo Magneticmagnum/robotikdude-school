@@ -203,7 +203,7 @@ void* worker(void* arg)
       // int r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
       {
         struct stat buffer;
-        int status = fstat(element.fd, &buffer);
+        int status = stat(strcat(location, element.filename), &buffer);
         off_t size = buffer.st_size;
         printf("Worker %i: getting stat, status: %i, size: %lld.\n", threadID, status, size);
       }
