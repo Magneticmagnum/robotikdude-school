@@ -72,7 +72,7 @@ static int cache_out;
 // dispatch thread
 void* dispatch(void* arg)
 {
-  int threadID = *(int*) arg;
+  int threadID = (int) arg;
 
   while (1) {
     char* file;
