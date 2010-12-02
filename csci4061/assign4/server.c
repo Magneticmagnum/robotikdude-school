@@ -203,9 +203,13 @@ void* worker(void* arg)
       // int r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
       {
         struct stat buffer;
-        int status = stat(strcat(location, element.filename), &buffer);
+        int status = fstat(element.fd, &buffer);
         off_t size = buffer.st_size;
-        printf("Worker %i: getting stat, status: %i, size: %lld.\n", threadID, status, size);
+        blkcnt_t blocks = buffer.st_blocks;
+        blksize_t blksize = buffer.st_blksize;
+        printf("Worker %i: getting stat, status: %i, size: %lld,"
+          " blocks: %lld, blksize: %lld.\n", threadID, status, size, blocks,
+               blksize);
       }
       printf("Worker %i: returning request to client.\n", threadID);
       //      int r = return_result(element.fd, content_type, element.filename, BUFFER_SIZE);
