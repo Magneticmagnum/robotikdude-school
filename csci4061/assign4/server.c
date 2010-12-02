@@ -200,16 +200,20 @@ void* worker(void* arg)
       }
       printf("Worker %i: content type: %s\n", threadID, content_type);
 
-      // int r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
+      //       int r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
       {
         struct stat buffer;
-        int status = fstat(element.fd, &buffer);
+        int status = stat(element.filename, &buffer);
+        char* cwd = getcwd(NULL, 0);
+        printf("Worker %i: CWD: %s\n", threadID, cwd);
+        free(cwd);
         off_t size = buffer.st_size;
-        blkcnt_t blocks = buffer.st_blocks;
-//        blksize_t blksize = buffer.st_blksize;
-        printf("Worker %i: getting stat, status: %i, size: %lld,"
-          " blocks: %lld.\n", threadID, status, size, blocks);
+        printf("Worker %i: getting stat on %s, status: %i, size: %lld,"
+          " blocks: %lld.\n", threadID, element.filename, status, size);
       }
+
+      //      char* buffer = (char*) malloc(sizeof(char) * 1024 * 80); // 80 KB
+
       printf("Worker %i: returning request to client.\n", threadID);
       //      int r = return_result(element.fd, content_type, element.filename, BUFFER_SIZE);
 
