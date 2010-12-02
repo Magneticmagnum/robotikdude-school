@@ -80,15 +80,15 @@ void* dispatch(void* arg)
 
     int fd = accept_connection();
     if (fd < 0) {
-      printf(stdout, "Connection not accepted in thread %i, exiting.\n", threadID);
+      printf("Connection not accepted in thread %i, exiting.\n", threadID);
       pthread_exit(NULL);
     }
-    printf(stdout, "Connection accepted in thread %i, fd: %i\n", threadID, fd);
+    printf("Connection accepted in thread %i, fd: %i\n", threadID, fd);
 
     file = (char*) malloc(sizeof(char) * BUFFER_SIZE);
     r = get_request(fd, file);
     if (r == 0) {
-      printf(stdout, "Valid request in thread %i, file: %s\n", threadID, file);
+      printf("Valid request in thread %i, file: %s\n", threadID, file);
 
       pthread_mutex_lock(&queue_access);
 
@@ -102,10 +102,10 @@ void* dispatch(void* arg)
 
       pthread_mutex_unlock(&queue_access);
 
-      printf(stdout, "Request has been added to the queue by thread %i", threadID);
+      printf("Request has been added to the queue by thread %i", threadID);
     }
     else {
-      printf(stdout, "Invalid request in thread %i, freeing memory.\n", threadID);
+      printf("Invalid request in thread %i, freeing memory.\n", threadID);
       free(file);
     }
   }
