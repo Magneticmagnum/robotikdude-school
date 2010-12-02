@@ -72,19 +72,24 @@ static int cache_out;
 // dispatch thread
 void* dispatch(void* arg)
 {
-  while (1) {
+  int threadID = (int) arg;
 
+  while (1) {
     char* file;
     int r;
-    int fd = accept_connection();
 
+    int fd = accept_connection();
     if (fd < 0) {
+      printf("Connection not accepted in thread %i, exiting.\n", threadID);
       pthread_exit(NULL);
     }
+    printf("Connection accepted in thread %i, fd: %i\n", threadID, fd);
 
     file = (char*) malloc(sizeof(char) * BUFFER_SIZE);
     r = get_request(fd, file);
     if (r == 0) {
+      printf("Valid request in thread %i, file: %s\n", threadID, file);
+
       pthread_mutex_lock(&queue_access);
 
       while (queue_in - queue_out >= queue_len) { // queue full
@@ -106,7 +111,7 @@ void* dispatch(void* arg)
 // worker thread
 void* worker(void* arg)
 {
-  int threadID = *(int*)arg;
+  int threadID = *(int*) arg;
 
   while (1) {
     pthread_mutex_lock(&queue_access);
@@ -175,6 +180,8 @@ void* worker(void* arg)
 // prefetcher thread
 void* prefetcher(void* arg)
 {
+  int threadID = (int) arg;
+
   while (1) {
     pthread_mutex_lock(&queue_pre_access);
 
@@ -283,29 +290,35 @@ int main(int argc, char** argv)
   mode = opMode;
 
   int i;
+  printf("Creating dispatch threads...\n");
   for (i = 0; i < nDispatch; i++) {
-    pthread_create(&dispathThreads[i], NULL, dispatch, NULL);
+    pthread_create(&dispathThreads[i], NULL, dispatch, (void*) (i + 1));
+    printf("Dispatch thread number %i created.\n", i + 1);
   }
 
-  for (i = 0; i < nWorker; i++) {
-    pthread_create(&workerThreads[i], NULL, worker, (void*) (i + 1));
-  }
-
-  for (i = 0; i < nPrefetch; i++) {
-    pthread_create(&prefetchThreads[i], NULL, prefetcher, NULL);
-  }
+  //  printf("Creating worker threads...\n");
+  //  for (i = 0; i < nWorker; i++) {
+  //    pthread_create(&workerThreads[i], NULL, worker, (void*) (i + 1));
+  //    printf("Dispatch thread number %i created.\n", i + 1);
+  //  }
+  //
+  //  printf("Creating prefetch threads...\n");
+  //  for (i = 0; i < nPrefetch; i++) {
+  //    pthread_create(&prefetchThreads[i], NULL, prefetcher, (void*) (i + 1));
+  //    printf("Dispatch thread number %i created.\n", i + 1);
+  //  }
 
   for (i = 0; i < nDispatch; i++) {
     pthread_join(dispathThreads[i], NULL);
   }
 
-  for (i = 0; i < nWorker; i++) {
-    pthread_join(workerThreads[i], NULL);
-  }
-
-  for (i = 0; i < nPrefetch; i++) {
-    pthread_join(prefetchThreads[i], NULL);
-  }
+  //  for (i = 0; i < nWorker; i++) {
+  //    pthread_join(workerThreads[i], NULL);
+  //  }
+  //
+  //  for (i = 0; i < nPrefetch; i++) {
+  //    pthread_join(prefetchThreads[i], NULL);
+  //  }
 
   return 0;
 }
