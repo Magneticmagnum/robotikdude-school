@@ -206,10 +206,9 @@ void* worker(void* arg)
         int status = fstat(element.fd, &buffer);
         off_t size = buffer.st_size;
         blkcnt_t blocks = buffer.st_blocks;
-        blksize_t blksize = buffer.st_blksize;
+//        blksize_t blksize = buffer.st_blksize;
         printf("Worker %i: getting stat, status: %i, size: %lld,"
-          " blocks: %lld, blksize: %lld.\n", threadID, status, size, blocks,
-               blksize);
+          " blocks: %lld.\n", threadID, status, size, blocks);
       }
       printf("Worker %i: returning request to client.\n", threadID);
       //      int r = return_result(element.fd, content_type, element.filename, BUFFER_SIZE);
