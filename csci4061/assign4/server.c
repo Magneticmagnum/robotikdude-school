@@ -310,12 +310,12 @@ int main(int argc, char** argv)
     printf("Dispatch thread number %i created.\n", i + 1);
   }
 
-  //  printf("Creating worker threads...\n");
-  //  for (i = 0; i < nWorker; i++) {
-  //    pthread_create(&workerThreads[i], NULL, worker, (void*) (i + 1));
-  //    printf("Dispatch thread number %i created.\n", i + 1);
-  //  }
-  //
+  printf("Creating worker threads...\n");
+  for (i = 0; i < nWorker; i++) {
+    pthread_create(&workerThreads[i], NULL, worker, (void*) (i + 1));
+    printf("Worker thread number %i created.\n", i + 1);
+  }
+
   //  printf("Creating prefetch threads...\n");
   //  for (i = 0; i < nPrefetch; i++) {
   //    pthread_create(&prefetchThreads[i], NULL, prefetcher, (void*) (i + 1));
@@ -326,10 +326,10 @@ int main(int argc, char** argv)
     pthread_join(dispathThreads[i], NULL);
   }
 
-  //  for (i = 0; i < nWorker; i++) {
-  //    pthread_join(workerThreads[i], NULL);
-  //  }
-  //
+  for (i = 0; i < nWorker; i++) {
+    pthread_join(workerThreads[i], NULL);
+  }
+
   //  for (i = 0; i < nPrefetch; i++) {
   //    pthread_join(prefetchThreads[i], NULL);
   //  }
