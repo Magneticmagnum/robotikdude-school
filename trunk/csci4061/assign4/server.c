@@ -204,7 +204,7 @@ void* worker(void* arg)
         struct stat buffer;
         int status = stat(element.filename, &buffer);
         off_t size = buffer.st_size;
-        printf("Worker %i: getting stat, size: %ll.\n", threadID, size);
+        printf("Worker %i: getting stat, size: %lld.\n", threadID, size);
       }
       printf("Worker %i: returning request to client.\n", threadID);
       //      int r = return_result(element.fd, NULL, element.filename, BUFFER_SIZE);
