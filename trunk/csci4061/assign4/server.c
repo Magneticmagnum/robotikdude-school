@@ -51,23 +51,23 @@ static pthread_cond_t queue_full = PTHREAD_COND_INITIALIZER;
 static pthread_cond_t queue_empty = PTHREAD_COND_INITIALIZER;
 static queue_t queue[MAX_QUEUE_LEN];
 static int queue_len;
-static int queue_in;
-static int queue_out;
+static int queue_in = 0;
+static int queue_out = 0;
 
 static pthread_mutex_t queue_pre_access = PTHREAD_MUTEX_INITIALIZER;
 //static pthread_cond_t queue_pre_full = PTHREAD_COND_INITIALIZER;
 static pthread_cond_t queue_pre_empty = PTHREAD_COND_INITIALIZER;
 static queue_t queue_pre[MAX_QUEUE_LEN];
-static int queue_pre_in;
-static int queue_pre_out;
+static int queue_pre_in = 0;
+static int queue_pre_out = 0;
 
 static pthread_mutex_t cache_access = PTHREAD_MUTEX_INITIALIZER;
 //static pthread_cond_t cache_full = PTHREAD_COND_INITIALIZER;
 //static pthread_cond_t cache_empty = PTHREAD_COND_INITIALIZER;
 static cache_t cache[MAX_CACHE_SIZE];
 static int cache_size;
-static int cache_in;
-static int cache_out;
+static int cache_in = 0;
+static int cache_out = 0;
 
 // dispatch thread
 void* dispatch(void* arg)
@@ -91,18 +91,20 @@ void* dispatch(void* arg)
       printf("Valid request in thread %i, file: %s\n", threadID, file);
 
       pthread_mutex_lock(&queue_access);
+      printf("Thread %i locking queue.\n", threadID);
 
       while (queue_in - queue_out >= queue_len) { // queue full
+        printf("Queue is full for thread %i.\n", threadID);
         pthread_cond_wait(&queue_full, &queue_access);
       }
       queue[queue_in % queue_len].fd = fd;
       queue[queue_in % queue_len].filename = file;
       queue_in++;
+      printf("Request has been added to the queue by thread %i", threadID);
       pthread_cond_broadcast(&queue_empty); // queue no longer empty
 
+      printf("Thread %i unlocking queue.\n", threadID);
       pthread_mutex_unlock(&queue_access);
-
-      printf("Request has been added to the queue by thread %i", threadID);
     }
     else {
       printf("Invalid request in thread %i, freeing memory.\n", threadID);
@@ -114,7 +116,7 @@ void* dispatch(void* arg)
 // worker thread
 void* worker(void* arg)
 {
-  int threadID = *(int*) arg;
+  int threadID = (int) arg;
 
   while (1) {
     pthread_mutex_lock(&queue_access);
