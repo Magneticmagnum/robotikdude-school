@@ -20,3 +20,15 @@ picks up requests form it and serves it to the client.  Worker threads puts
 these requests back to another prefetching queue which is read by the
 prefetcher thread.  Prefetcher threads check if they can guess what the next
 request is going to be and bring the guessed page from the disk to the cache.
+
+ How to compile
+ ====================
+ 
+ Extract all the files to a separate folder and navigate to the folder.
+ From there you may build and run the following makefile commands:
+ 
+ make all - Builds everything (recommended)
+ 
+ make web_server_http -
+ 
+ make server.o -
