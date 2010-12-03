@@ -2,7 +2,7 @@
  * section: one_digit_number
  * login: norma272
  * date: 11/26/10
- * names: Brian Norman, Chaichana Noree, Joshua Houltou
+ * names: Brian Norman, Chaichana Noree, Joshua Houlton
  * ID:    4332223     , 4295362        , 3688485
  */
 
@@ -29,6 +29,6 @@ request is going to be and bring the guessed page from the disk to the cache.
  
  make all - Builds everything (recommended)
  
- make web_server_http -
+ make web_server_http - Creates the server executable
  
- make server.o -
+ make server.o - Creates the server object file
