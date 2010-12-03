@@ -1,6 +1,6 @@
 #!/opt/gnu/bin
 PORT=9000
-PATH="./testing"
+PATH="testing"
 DISPATCH=10
 WORKERS=10
 PREFETCH=10

@@ -38,18 +38,19 @@
 
 typedef struct
 {
-  int fd;
-  char* filename;
+  int fd; // file descriptor
+  char filename[2 * BUFFER_SIZE]; // file name
 } queue_t;
 
 typedef struct
 {
-  char* request;
-  char* result;
+  char request[2 * BUFFER_SIZE]; // file name
+  char* result; // file contents
+  int size; // file size
 } cache_t;
 
 static int mode;
-static char* location;
+//static char* location;
 
 static pthread_mutex_t queue_access = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t queue_full = PTHREAD_COND_INITIALIZER;
@@ -78,21 +79,23 @@ static int cache_out = 0;
 void* dispatch(void* arg)
 {
   int threadID = (int) arg;
+  char file[2 * BUFFER_SIZE];
+  int fd;
+  int r;
 
   while (1) {
-    char* file;
-    int r;
 
     printf("Dispatch %i: attempting to accept connection...\n", threadID);
-    int fd = accept_connection();
+    fd = accept_connection();
     if (fd < 0) {
       printf("Dispatch %i: connection not accepted , exiting.\n", threadID);
       pthread_exit(NULL);
     }
     printf("Dispatch %i: connection accepted, fd: %i\n", threadID, fd);
 
-    file = (char*) malloc(sizeof(char) * BUFFER_SIZE);
-    r = get_request(fd, file);
+    // append the absolute path before the relative file
+    getcwd(file, 2 * BUFFER_SIZE);
+    r = get_request(fd, file + strlen(file));
     if (r == 0) {
       printf("Dispatch %i: valid request, file: %s\n", threadID, file);
 
@@ -104,7 +107,7 @@ void* dispatch(void* arg)
         pthread_cond_wait(&queue_full, &queue_access);
       }
       queue[queue_in % queue_len].fd = fd;
-      queue[queue_in % queue_len].filename = file;
+      strcpy(queue[queue_in % queue_len].filename, file);
       queue_in++;
       printf("Dispatch %i: request has been added to the queue.\n", threadID);
       pthread_cond_broadcast(&queue_empty); // queue no longer empty
@@ -113,8 +116,7 @@ void* dispatch(void* arg)
       pthread_mutex_unlock(&queue_access);
     }
     else {
-      printf("Dispatch %i: invalid request, freeing memory.\n", threadID);
-      free(file);
+      printf("Dispatch %i: invalid request.\n", threadID);
     }
   }
 }
@@ -148,42 +150,47 @@ void* worker(void* arg)
         int i;
         int j;
         pthread_mutex_lock(&cache_access);
+        printf("Worker %i: locking cache\n", threadID);
         // if a match is found, switch that element with the current element
-        for (i = queue_out - 1; i >= queue_in && !contains; i--) {
-          for (j = cache_out - 1; j >= cache_in && !contains; j--) {
-            if (strcmp(queue[i].filename, cache[i].result) == 0) {
-              queue_t new_element = queue[i];
-              queue[i] = element;
+        for (i = queue_in - 1; i >= queue_out && !contains; i--) {
+          for (j = cache_in - 1; j >= cache_out && !contains; j--) {
+            if (strcmp(queue[i % queue_len].filename,
+                       cache[i % cache_size].request) == 0) {
+              queue_t new_element = queue[i % queue_len];
+              queue[i % queue_len] = element;
               element = new_element;
               contains = 1;
             }
           }
         }
+        printf("Worker %i: unlocking cache\n", threadID);
         pthread_mutex_unlock(&cache_access);
       }
       else {
         printf("Worker %i: mode is FCFS.\n", threadID);
-        //        int i;
-        //        pthread_mutex_lock(&cache_access);
-        //        for (i = cache_out - 1; i >= cache_in && !contains; i--) {
-        //          if (strcmp(element.filename, cache[i].result) == 0) {
-        //            contains = 1;
-        //          }
-        //        }
-        //        pthread_mutex_unlock(&cache_access);
+        int i;
+        pthread_mutex_lock(&cache_access);
+        printf("Worker %i: locking cache\n", threadID);
+        for (i = cache_in - 1; i >= cache_out && !contains; i--) {
+          if (strcmp(element.filename, cache[i % cache_size].request) == 0) {
+            contains = 1;
+          }
+        }
+        printf("Worker %i: unlocking cache\n", threadID);
+        pthread_mutex_unlock(&cache_access);
       }
 
       // FCFS
 
       // get the content type of the file
-      char* s = strtok(element.filename, ".");
+      char* tempStr = (char*) malloc(sizeof(char) * strlen(element.filename));
+      strcpy(tempStr, element.filename);
+      char* s = strtok(tempStr, ".");
       char* last = NULL;
       // get last string before .
       while (s != NULL) {
         last = s;
         s = strtok(NULL, ".");
-        if (s != NULL)
-          last = s;
       }
       char* content_type;
       if (strcmp(last, "html") == 0) {
@@ -198,35 +205,66 @@ void* worker(void* arg)
       else {
         content_type = CONTENT_TYPE_DEFAULT;
       }
+      free(tempStr);
       printf("Worker %i: content type: %s\n", threadID, content_type);
 
-      //       int r = return_result(queue[queue_in].fd, char *content_type, char *buf, int numbytes);
-      {
-        struct stat buffer;
-        int status = stat(strcat(location, element.filename), &buffer);
-        char* cwd = getcwd(NULL, 0);
-        printf("Worker %i: CWD: %s\n", threadID, cwd);
-        free(cwd);
-        off_t size = buffer.st_size;
-        printf("Worker %i: getting stat on %s, status: %i, size: %lld,"
-          " blocks: %lld.\n", threadID, strcat(location, element.filename), status, size);
+      struct stat buffer;
+      int status = stat(element.filename, &buffer);
+      long long size = buffer.st_size;
+      printf("Worker %i: getting stat on %s, status: %i, size: %lld.\n",
+             threadID, element.filename, status, size);
+
+      FILE* file = fopen(element.filename, "r");
+      if (file != NULL) {
+        char* bufferCache = (char*) malloc(sizeof(char) * size);
+        fread(bufferCache, sizeof(char), size, file);
+        printf("Worker %i: copying file into buffer.\n", threadID);
+
+        int r = return_result(element.fd, content_type, bufferCache, size);
+        printf("Worker %i: returning request to client, r: %i\n", threadID, r);
+
+        //        free(bufferCache);
+        // store in cache
+        printf("Worker %i: storing web page in the cache.\n", threadID);
+        pthread_mutex_lock(&cache_access);
+        printf("Worker %i: locking cache\n", threadID);
+        if (cache_in >= cache_size) {
+          printf("Worker %i: freeing previous memory in cache\n", threadID);
+          free(cache[cache_in % cache_size].result);
+        }
+        strcpy(cache[cache_in % cache_size].request, element.filename);
+        cache[cache_in % cache_size].result = bufferCache;
+        cache[cache_in % cache_size].size = size;
+        cache_in++;
+        if (cache_in - cache_out >= cache_size) {
+          cache_out++;
+        }
+        printf("Worker %i: unlocking cache\n", threadID);
+        pthread_mutex_unlock(&cache_access);
+      }
+      else {
+        int r = return_error(element.fd, "ERROR!!!");
+        printf("Worker %i: error opening, file: %s, r: %i\n", threadID,
+               element.filename, r);
       }
 
-      //      char* buffer = (char*) malloc(sizeof(char) * 1024 * 80); // 80 KB
-
-      printf("Worker %i: returning request to client.\n", threadID);
-      //      int r = return_result(element.fd, content_type, element.filename, BUFFER_SIZE);
-
-      //      if (queue_pre_in - queue_pre_out < queue_len) {
-      //        queue_pre[queue_pre_in] = element;
-      //        queue_pre_in++;
-      //        pthread_cond_broadcast(&queue_pre_empty); // prefetcher queue no longer empty
-      //      }
-      //      else {
-      printf("Worker %i: freeing filename memory.\n", threadID);
-      free(element.filename);
-      //      }
       queue_out++;
+
+      pthread_mutex_lock(&queue_pre_access);
+      printf("Worker %i: locking prefetcher queue\n", threadID);
+      if (queue_pre_in - queue_pre_out < queue_len) {
+        printf("Worker %i: adding element to the prefetcher queue.\n", threadID);
+        queue_pre[queue_pre_in % MAX_QUEUE_LEN].fd = element.fd;
+        strcpy(queue_pre[queue_pre_in % MAX_QUEUE_LEN].filename,
+               element.filename);
+        queue_pre_in++;
+        pthread_cond_broadcast(&queue_pre_empty); // prefetcher queue no longer empty
+      }
+      else {
+        printf("Worker %i: prefetcher thread is full.\n", threadID);
+      }
+      printf("Worker %i: unlocking prefetcher queue\n", threadID);
+      pthread_mutex_unlock(&queue_pre_access);
 
       pthread_cond_broadcast(&queue_full); // queue no longer full
     }
@@ -250,24 +288,54 @@ void* prefetcher(void* arg)
 
     queue_t element = queue_pre[queue_pre_out % queue_len];
 
-    char* guess;
+    char guess[2 * BUFFER_SIZE];
     int r;
 
-    r = nextguess(element.filename, guess);
+    getcwd(guess, 2 * BUFFER_SIZE);
+    r = nextguess(element.filename, guess + strlen(guess));
 
     if (r != 0) {
       pthread_mutex_lock(&cache_access);
       int contains = 0;
       int i;
-      for (i = 0; i < cache_size && !contains; i++) {
-        if (strcmp(guess, cache[i].result) == 0) {
+      for (i = cache_in - 1; i >= cache_out && !contains; i--) {
+        if (strcmp(guess, cache[i % cache_size].request) == 0) {
           contains = 1;
         }
       }
       if (!contains) {
-        cache[cache_in % cache_size].request = element.filename;
-        cache[cache_in % cache_size].result = guess;
-        cache_in++;
+        //        strcpy(cache[cache_in % cache_size].request, element.filename);
+        //        cache[cache_in % cache_size].result = guess;
+        //        cache_in++;
+        if (cache_in >= cache_size) {
+          printf("Prefetcher %i: freeing previous memory in cache\n", threadID);
+          free(cache[cache_in % cache_size].result);
+        }
+
+        struct stat buffer;
+        int status = stat(element.filename, &buffer);
+        long long size = buffer.st_size;
+        printf("Prefetcher %i: getting stat on %s, status: %i, size: %lld.\n",
+               threadID, element.filename, status, size);
+
+        FILE* file = fopen(element.filename, "r");
+        if (file != NULL) {
+          char* bufferCache = (char*) malloc(sizeof(char) * size);
+          fread(bufferCache, sizeof(char), size, file);
+          printf("Prefetcher %i: copying file into buffer.\n", threadID);
+
+          strcpy(cache[cache_in % cache_size].request, element.filename);
+          cache[cache_in % cache_size].result = bufferCache;
+          cache[cache_in % cache_size].size = size;
+          cache_in++;
+          if (cache_in - cache_out >= cache_size) {
+            cache_out++;
+          }
+        }
+        else {
+          printf("Worker %i: error opening, file: %s, r: %i\n", threadID,
+                 element.filename, r);
+        }
       }
       pthread_mutex_unlock(&cache_access);
     }
@@ -343,8 +411,10 @@ int main(int argc, char** argv)
   pthread_t workerThreads[MAX_WORKER];
   pthread_t prefetchThreads[MAX_PREFETCHER];
 
+  chdir(path);
+
   init(port);
-  location = path;
+  //  location = path;
   queue_len = queueLength;
   cache_size = cacheSize;
   mode = opMode;
