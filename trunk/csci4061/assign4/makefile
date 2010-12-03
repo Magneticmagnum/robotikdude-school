@@ -8,6 +8,7 @@ web_server_http: server.c util-http.o
 	${CC} ${CFLAGS} ${LDFLAGS} -o web_server_http server.c util-http.o
 
 server.o: server.c
+	${CC} ${CFLAGS} -c server.c
 
 clean:
-	rm server.o web_server_http
+	rm -f server.o web_server_http
