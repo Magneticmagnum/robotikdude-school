@@ -10,7 +10,8 @@
 #include <netdb.h>
 
 //function prototypes
-int accept_connection();
+int init(int portNum);
+int accept_connection(void NULL);
 int get_request(int fd, char *filename);
 int return_error(int fd, char *buf);
 int return_result(int fd, char *content_type, char *buf, int numbytes);
@@ -45,7 +46,7 @@ int init(int portNum) {
 	return 0;
 }
 
-int accept_connection() {
+int accept_connection(void NULL) {
 	struct sockaddr_in client_addr;
 	unsigned int size = sizeof(struct sockaddr);
 	pthread_mutex_lock(&socket_lock);
