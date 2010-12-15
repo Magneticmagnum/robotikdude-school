@@ -10,6 +10,10 @@
 #include <netdb.h>
 
 //function prototypes
+int accept_connection();
+int get_request(int fd, char *filename);
+int return_error(int fd, char *buf);
+int return_result(int fd, char *content_type, char *buf, int numbytes);
 void freemakeargv(char ** argv);
 int makeargv(const char *s, const char *delimiters, char***argvp);
 
@@ -70,11 +74,11 @@ int get_request(int fd, char *filename) {
 /**
  * Similarly, if something went wrong, you should write back to the socket descriptor:
  HTTP/1.1 404 Not Found
-Content-Type: text/html
-Content-Length: num-bytes-here
-Connection: Close
-(blank line)
-Error-message-here
+ Content-Type: text/html
+ Content-Length: num-bytes-here
+ Connection: Close
+ (blank line)
+ Error-message-here
  */
 int return_error(int fd, char *buf) {
 	FILE *client = fdopen(fd, "w");
@@ -96,11 +100,11 @@ int return_error(int fd, char *buf) {
 
 /*
  * HTTP/1.1 200 OK
-Content-Type: content-type-here
-Content-Length: num-bytes-here
-Connection: Close
-(blank line)
-File-contents-here
+ Content-Type: content-type-here
+ Content-Length: num-bytes-here
+ Connection: Close
+ (blank line)
+ File-contents-here
  */
 int return_result(int fd, char *content_type, char *buf, int numbytes) {
 	FILE *client = fdopen(fd, "w");
@@ -125,7 +129,6 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
 
 	return 0;
 }
-
 
 /*
  * Utility Functions taken from:
