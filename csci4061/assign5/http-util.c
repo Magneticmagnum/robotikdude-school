@@ -1,3 +1,5 @@
+#include "http-util.h"
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -10,14 +12,6 @@
 #include <netdb.h>
 
 //function prototypes
-int init(int portNum);
-int accept_connection(void NULL);
-int get_request(int fd, char *filename);
-int return_error(int fd, char *buf);
-int return_result(int fd, char *content_type, char *buf, int numbytes);
-void freemakeargv(char ** argv);
-int makeargv(const char *s, const char *delimiters, char***argvp);
-
 int socket_fd;
 
 pthread_mutex_t socket_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -46,7 +40,7 @@ int init(int portNum) {
 	return 0;
 }
 
-int accept_connection(void NULL) {
+int accept_connection() {
 	struct sockaddr_in client_addr;
 	unsigned int size = sizeof(struct sockaddr);
 	pthread_mutex_lock(&socket_lock);
