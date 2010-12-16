@@ -122,6 +122,8 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
 
 	fclose(client);
 
+	printf("Wrote to fd %d", fd);
+
 	return 0;
 }
 
