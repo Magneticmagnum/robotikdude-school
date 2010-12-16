@@ -272,7 +272,7 @@ void * worker(void *arg)
 
         int filefd;
         if ((filefd = open(mybuf + 1, O_RDONLY)) == -1) {
-          return_error(fd, "File not found.");
+          _error(fd, "File not found.");
           pthread_mutex_lock(&log_mutex);
           fprintf(logfile, "[%d][%d][%d][%s][%s][%s]\n", id, myreqnum, fd,
                   hit_or_miss, mybuf, "File not found.");
