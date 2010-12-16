@@ -113,14 +113,14 @@ int return_result(int fd, char *content_type, char *buf, int numbytes) {
 
 	fprintf(client, "Content-Type: %s\n", content_type);
 	fprintf(client, "Content-Length: %d\n", numbytes);
-	fprintf(client, "Connection: Close\n");
+	fprintf(client, "Connection: Keep-Alive\n");
 	fprintf(client, "\n");
 
 	fflush(client);
 
 	write(fd, buf, numbytes);
 
-	close(fd);
+	fclose(client);
 
 	return 0;
 }
