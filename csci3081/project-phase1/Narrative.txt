@@ -1,0 +1,25 @@
+Since Phase I of the group project came with a pre-defined API that did not require
+a complicated implementation, the team did not spend much time on high-level design
+decisions.  It was possible to successfully implement the API without adding many helper
+classes that were not directly specified in the API.  Thus, we spent most of our time
+writing test cases, implementing the classes and methods mentioned in the API/assignment
+description, and debugging.
+
+One exception to the lack of time spent on making high-level design decisions was
+our choice to create a separate Logger class, rather than explicitly including logging
+methods in each of the classes, or having multiple methods across the various classes
+write code directly to the log file.  However, the only difficulty presented by the Logger
+class was in making sure that it was available to all of the other classes that needed
+to send messages to the log.  
+
+Due to the fairly straightforward nature of the assignment, we did not encounter any
+major obstacles in implementing this energy use simulator.  Though it was difficult to 
+hold group meetings due to schedule conflicts, the lack of design work required made
+it possible to divide work up and have people complete their portions individually.  Also,
+it was quite simple to split the work up:  with three classes and one main file to write
+and four group members, the division of work was obvious.  Future phases of the project
+may require more coordination and communication among team members, but this phase was 
+possible to complete without extensive or constant communication.  None of us are 
+quite accustomed to test-first development, but this phase was not complicated enough
+to expose the shortcomings of not writing extensive tests prior to writing the working
+code.
