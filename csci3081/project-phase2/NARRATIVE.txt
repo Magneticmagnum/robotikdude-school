@@ -1,0 +1,37 @@
+As Phase 2 was significantly more complex than the previous phase, 
+it took more of a time investment to get things working.  All 
+of us have other classes, which challenged our time management abilities.
+Coupled with a limited range of times that we could meet in person, 
+this made things a little more complicated for all of us.  This obstacle was
+largely circumvented by the use of trac.  Creating and assigning tickets 
+helped us all to be aware of what the rest of the group was working on as 
+well as communicate problems with each other's code.  However, since
+no group members were accustomed to extensive reliance on issue tracking
+systems, it took some getting used to.  It was particularly difficult to
+associate every single commit with a ticket.  It is easy to neglect issue-
+tracking discipline for small fixes, either by leaving them out of Trac
+altogether or associating them with pre-existing but somewhat unrelated 
+tickets.  This did not create any major problems but is a bad habit to 
+get into.    
+
+Because of this phase's complexity, design became much more critical to the 
+project's success than it had been in the previous phase.  We had a large 
+number of difficulties implementing the Person model because of its dependencies 
+on other models and because of the complexity of representing the convoluted 
+schedule of appliance usage.  Coming up with ways to minimize those difficulties 
+was perhaps the main challenge of this phase for our group.  The dependency problem
+was solved  by using the singleton model - we put a getInstance method in the Model 
+class, which returns a pointer to the singleton copy of any Model.  We also chose
+to use a state machine in the Person class, to model the various state changes
+required by the Person's daily schedule.  We were unable to come up with a solution
+that would allow for an arbitrary daily schedule; much of the metadata defining
+a Person's daily schedule had to be hard-coded into the functions of the Person
+class.  This is not a problem now, as the code does meet our requirements.  It
+may mean more work in the future, as the program is extended or made more general.
+
+Overall this phase required significantly more work than Phase I, but did not
+present any insurmountable challenges.  Though the lack of face-to-face meetings
+did make the design work more difficult, the addition of Trac alleviated this
+problem somewhat.  Time constraints meant that, while we were able to meet
+the requirements of this Phase, we did not manage to create a program that is
+as robust or high-quality as we would like.

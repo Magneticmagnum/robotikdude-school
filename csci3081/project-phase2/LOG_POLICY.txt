@@ -1,0 +1,21 @@
+Described below are the different logging levels used and a description when
+they are used.
+
+TRACE:
+Used when logging the FLOW of the program. Everything at the TRACE level should
+deal with how the program flows. Method entrances and exits, loops, etc. 
+
+DEBUG: (testing)
+Used when printing runtime debug information. This can be anything from
+printing variable values to a message when a special case happens. Any general
+printing that is not required by the program and does not have to do with the
+flow of the program should be at the DEBUG level.
+
+INFO: (executable)
+This is the default level for logging. Messages at the INFO level are
+messages that are required by the program but do not fall into the ERROR
+category and are not part of the debugging.
+
+ERROR:
+Used when an error occurs. Usually the error is properly handled by the
+program but an error message is printed to the log file.
