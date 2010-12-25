@@ -1,0 +1,3 @@
+# this is a comment => won't be read
+current-state  Delay  current-state 4
+what-state?     Fail  current-state? 30
