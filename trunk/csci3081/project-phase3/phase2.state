@@ -1,0 +1,92 @@
+# lines starting with hash # are comments
+sleeping   RandomTime   waking-up 6:30 7:00
+
+
+# 1) Five minutes after waking up, the person takes a shower with a 50%
+# probability. Showers last 5-10 minutes, the flow rate of the shower head is
+# 8 l/min of water at 40 °C.
+waking-up      Delay         maybe-shower 5
+maybe-shower   Choice        start-shower dressing 0.5
+start-shower   Action        showering shower start 8 40
+showering      RandomDelay   stop-shower 5 10
+stop-shower    Action        dressing shower stop
+
+
+# 2) 15 minutes later, the person gets breakfast, spending 10 minutes
+# "cooking", making coffee (using the stove, one burner on "high" for 4 min),
+# using the toaster once, and using either the stove (one burner on "medium"
+# for 5 minutes) or the microwave.
+dressing            Delay    start-breakfast 15
+start-breakfast     Timer    blah0 set breakfast
+blah0               Action   make-coffee refrigerator start
+make-coffee         Action   make-toast stove high 4
+make-toast          Action   eggs-or-oatmeal toaster start
+eggs-or-oatmeal     Choice   start-eggs start-oatmeal 0.5
+start-eggs          Action   cooking-eggs stove medium 5
+cooking-eggs        Delay    stop-breakfast 5
+start-oatmeal       Action   heating-oatmeal microwave start
+heating-oatmeal     Wait     eat-breakfast microwave
+eat-breakfast       Timer    stop-breakfast wait breakfast 10
+stop-breakfast      Action   work refrigerator stop
+
+
+# 3) The person then leaves the house, and arrives back between 17:30 and 18:30
+# (uniform distribution).
+work        RandomTime   gets-home 17:30 18:30
+gets-home   TimeCond     start-quick-dinner start-nice-dinner 18:00
+
+
+# 4) If the person arrived home before 18:00, it spends 40 minutes cooking
+# dinner using 3 burners on the stove, one on "high" for 15 min, one on
+# "medium" for 20 min, and one on "low" for 30 min. and possibly
+# (20% probability) the oven.
+start-nice-dinner   Timer    blah1 set nice-dinner
+blah1               Action   start-stove refrigerator start
+start-stove         Action   maybe-oven stove high 15 medium 20 low 30
+maybe-oven          Choice   nice-dinner-delay start-oven 0.2
+start-oven          Action   nice-dinner-delay oven start
+nice-dinner-delay   Delay    eat-nice-dinner stop
+eat-nice-dinner     Timer    stop-nice-dinner wait nice-dinner 40
+stop-nice-dinner    Action   dishes-delay refrigerator stop
+
+
+# 5) If the person arrived home after 18:00, it spends just 10 min cooking,
+# using the microwave 3 times.
+start-quick-dinner   Timer    blah2 set quick-dinner
+blah2                Action   microwave1 refrigerator start
+microwave1           Action   microwave1-wait microwave start
+microwave1-wait      Wait     microwave2 microwave
+microwave2           Action   microwave2-wait microwave start
+microwave2-wait      Wait     microwave3 microwave
+microwave3           Action   microwave3-wait microwave start
+microwave3-wait      Wait     eat-quick-dinner microwave
+eat-quick-dinner     Timer    stop-quick-dinner wait quick-dinner 10
+stop-quick-dinner    Action   dishes-maybe refrigerator stop
+
+
+# 6) 20 min after cooking is finished, the dishwasher may have to be run. If
+# the person cooked dinner using the stove, or if it has been three days since
+# the dishwasher was run, then definitely the dishwasher will have to run.
+dishes-maybe    TimerCond    maybe-bath dishes-delay dishes-days 2880
+dishes-delay    Delay        dishes-start 20
+dishes-start    Action       dishes-wait dishwasher start
+dishes-wait     Wait         dishes-stop dishwasher
+dishes-stop     Timer        maybe-bath set dishes-days
+
+
+# 7) After dinner, the person may decide to take a bath, with a 20% probability
+# (some days are more stressful than others). Baths require 100 l of water at
+# 42 °C, the tub takes 4 min to fill, and the bath takes 15-20 minutes after
+# the tub is filled.
+maybe-bath   Choice        start-veg start-bath 0.2
+start-bath   Action        fill-bath bath start 25 42
+fill-bath    Wait          bath bath
+bath         RandomDelay   start-veg 15 20
+
+
+# 8) For the remainder of the evening, until the person goes to bed, it turns
+# the television on to veg out. The television gets turned off before the
+# person goes to bed.
+start-veg   Action       vegging television start
+vegging     RandomTime   bed-time 23:00 23:30
+bed-time    Action       sleeping television stop
