@@ -72,4 +72,4 @@ test-coverage: run-tests
 
 # Clean up
 clean: 
-	rm -f *.o $(EXECUTABLE) $(RUNNER)* *.gcno *.gcda *.gcov
+	rm -f *.o $(EXECUTABLE) $(RUNNER)* *.gcno *.gcda *.gcov test_coverage.txt
