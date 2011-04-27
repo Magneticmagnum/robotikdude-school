@@ -1,13 +1,15 @@
 package nn;
 
-import graphics.DrawMenu;
-import graphics.RGraphics;
-
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
-import move.GunMovement;
-import move.RadarMovement;
+import nn.graphics.DrawMenu;
+import nn.graphics.RGraphics;
+import nn.move.GunMovement;
+import nn.move.RadarMovement;
+import nn.robot.EnemyProfile;
+import nn.robot.RobotData;
+import nn.utils.Utils;
 import robocode.AdvancedRobot;
 import robocode.Bullet;
 import robocode.DeathEvent;
@@ -15,9 +17,6 @@ import robocode.RobotDeathEvent;
 import robocode.Rules;
 import robocode.ScannedRobotEvent;
 import robocode.WinEvent;
-import robot.EnemyProfile;
-import robot.RobotData;
-import utils.Utils;
 
 public class Shooter extends AdvancedRobot {
 
