@@ -17,41 +17,16 @@ public class Menu {
    private HashMap<String, Boolean> items;
 
    public Menu(String name) {
-      init(name, null);
-   }
-
-   public Menu(final String name, String[] items) {
-      init(name, items);
-   }
-
-   private void init(String n, String[] i) {
-      this.name = n;
+      this.name = name;
       this.items = new HashMap<String, Boolean>();
-      if (i != null)
-         for (String s : i)
-            this.items.put(s, false);
-   }
-
-   public void add(String item) {
-      add(item, false);
-   }
-
-   public void add(String item, boolean def) {
-      if (!items.keySet().contains(item))
-         items.put(item, def);
-   }
-
-   public boolean getValue(String item) {
-      return getValue(item, false);
    }
 
    public boolean getValue(String item, boolean def) {
       Boolean value = items.get(item);
-      if (value != null)
-         return value.booleanValue();
-      else
-         add(item, def);
-      return def;
+      if (value == null) {
+         items.put(item, value = def);
+      }
+      return value;
    }
 
    public String getName() {

@@ -25,28 +25,16 @@ public class DrawMenu {
 
    private static ArrayList<Menu> menus            = new ArrayList<Menu>();
 
-   public static void add(String item, String menu) {
-      add(item, menu, false);
-   }
-
-   public static void add(String item, String menu, boolean def) {
-      Menu m = getMenu(menu);
-      if (m == null)
-         menus.add(m = new Menu(menu));
-      m.add(item, def);
-   }
-
    public static boolean getValue(String item, String menu) {
       return getValue(item, menu, false);
    }
 
    public static boolean getValue(String item, String menu, boolean def) {
       Menu m = getMenu(menu);
-      if (m != null)
-         return m.getValue(item, def);
-      else
-         add(item, menu, def);
-      return def;
+      if (m == null) {
+         menus.add(m = new Menu(menu));
+      }
+      return m.getValue(item, def);
    }
 
    public static void inMouseEvent(final MouseEvent e) {
