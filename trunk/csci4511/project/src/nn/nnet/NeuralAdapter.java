@@ -1,6 +1,6 @@
 package nn.nnet;
 
-import nrlibj.NNet;
+import nn.matrices.Vector;
 
 /**
  * Neural adapter class to easily instantiate a neural network with either >= 0
@@ -10,7 +10,7 @@ import nrlibj.NNet;
  */
 public class NeuralAdapter {
 
-	private NNet network;
+	private NeuralNetwork net;
 
 	/**
 	 * Create a neural adapter with no hidden layer (perceptron)
@@ -19,10 +19,7 @@ public class NeuralAdapter {
 	 * @param outputNodes
 	 */
 	public NeuralAdapter(int inputNodes, int outputNodes) {
-		// TODO Auto-generated constructor stub
-		network = new NNet("layer=0 tnode=" + inputNodes + " nname=NodeLin "
-				+ "layer=1 tnode=" + outputNodes + " nname=NodeLin "
-				+ "link=all fromLayer=0 toLayer=1");
+		net = NeuralNetwork.create(inputNodes, outputNodes);
 	}
 
 	/**
@@ -32,10 +29,8 @@ public class NeuralAdapter {
 	 * @param hidden
 	 * @param outputNodes
 	 */
-	public NeuralAdapter(int inputNodes, int hidden, int outputNodes) {
-		network = new NNet("layer=0 tnode=" + inputNodes + " nname=NodeLin "
-				+ "layer=1 tnode=" + hidden + " nname=NodeSigm "
-				+ "layer=2 tnode=" + outputNodes + " nname=NodeLin");
+	public NeuralAdapter(int inputNodes, int hiddenNodes, int outputNodes) {
+		net = NeuralNetwork.create(inputNodes, hiddenNodes, outputNodes);
 	}
 
 	/**
@@ -44,10 +39,12 @@ public class NeuralAdapter {
 	 * @param parameters
 	 * @return
 	 */
-	public float[] solution(float[] parameters) {
-		float[] out = new float[parameters.length];
-		network.frwNNet(parameters, out);
-		return out;
+	public double[] solution(double[] parameters) {
+		Vector dblVec = new Vector(parameters);
+		Vector out = net.get(dblVec);
+		double[] arr = new double[out.getLength()];
+		out.values(arr);
+		return arr;
 	}
 
 	/**
@@ -58,9 +55,13 @@ public class NeuralAdapter {
 	 * @param expected
 	 * @return
 	 */
-	public float[] train(float[] input, float[] expected) {
-		float[] out = new float[input.length];
-		network.ebplrnNNet(input, out, expected);
-		return expected;
+	public int train(double[] inp, double[] expected) {
+		return train(inp, expected, 1);
+	}
+
+	public int train(double[] inp, double[] exp, double alpha) {
+		Vector input = new Vector(inp);
+		Vector output = new Vector(exp);
+		return net.train(input, output, alpha);
 	}
 }
