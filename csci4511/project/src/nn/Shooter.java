@@ -1,8 +1,11 @@
 package nn;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
+import nn.features.Distance;
+import nn.features.Velocity;
 import nn.graphics.DrawMenu;
 import nn.graphics.RGraphics;
 import nn.move.GunMovement;
@@ -28,6 +31,10 @@ public class Shooter extends AdvancedRobot {
    private static EnemyProfile profile_;
 
    // private RobotManager robots_;
+
+
+   private Distance            distance = new Distance(10, 100, 1000);
+   private Velocity            velocity = new Velocity(9, -8, 8);
 
    @Override
    public void run() {
@@ -71,6 +78,13 @@ public class Shooter extends AdvancedRobot {
          enemy_.draw(grid);
       if (profile_ != null)
          profile_.draw(grid);
+
+      grid.setColor(Color.RED);
+      distance.draw(grid, enemy_, new RobotData(this), 20, 20, 20, 150);
+
+      grid.setColor(Color.GREEN);
+      velocity.draw(grid, enemy_, new RobotData(this), 200, 20, 20, 100);
+
    }
 
    @Override
