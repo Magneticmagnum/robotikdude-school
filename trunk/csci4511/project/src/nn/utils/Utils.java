@@ -703,4 +703,16 @@ public class Utils {
       return -1;
    }
 
+   public static double normalDistrobution(double distFromMean, double stdDevSq) {
+      return 1.0 / Math.sqrt(2.0 * Math.PI * stdDevSq) * Math.exp(-Utils.sqr(distFromMean) / (2.0 * stdDevSq));
+   }
+
+   public static double sigmoid(double z) {
+      return 1.0 / (1.0 + 5.0 * Math.exp(-z));
+   }
+
+   public static double dsigmoid(double z) {
+      double s = sigmoid(z);
+      return s * (1 - s);
+   }
 }
