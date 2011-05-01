@@ -255,7 +255,6 @@ public class VirtualWave {
       return false;
    }
 
-   // TODO code: VirtualWave - toString()
    @Override
    public String toString() {
       return new String();

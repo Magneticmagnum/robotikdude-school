@@ -12,45 +12,46 @@ import robocode.Robot;
  * @author Brian Norman
  * @version 0.0.1 beta
  */
-public class DataWave<E> extends VirtualWave {
+public class DataWave extends VirtualWave {
 
    private static final long serialVersionUID = 4650614154195009930L;
 
-   protected E[]             data;
+   protected double[]        data;
    protected RobotData       view;
    protected RobotData       reference;
 
-   public DataWave(double startX, double startY, double heading, double firePower, long creationTime, E[] data,
+   public DataWave(double startX, double startY, double heading, double firePower, long creationTime, double[] data,
          RobotData view, RobotData reference) {
       super(startX, startY, heading, firePower, creationTime);
       init(data, view, reference);
    }
 
-   public DataWave(Bullet bullet, RobotData firer, RobotData target, E[] data, RobotData view, RobotData reference) {
+   public DataWave(Bullet bullet, RobotData firer, RobotData target, double[] data, RobotData view, RobotData reference) {
       super(firer.getX(), firer.getY(), Utils.angle(firer.getX(), firer.getY(), target.getX(), target.getY()), bullet
             .getPower(), firer.getTime());
       init(data, view, reference);
    }
 
-   public DataWave(RobotData firer, RobotData target, double firePower, E[] data, RobotData view, RobotData reference) {
+   public DataWave(RobotData firer, RobotData target, double firePower, double[] data, RobotData view,
+         RobotData reference) {
       super(firer.getX(), firer.getY(), Utils.angle(firer.getX(), firer.getY(), target.getX(), target.getY()),
             firePower, firer.getTime());
       init(data, view, reference);
    }
 
-   public DataWave(Robot firer, RobotData target, double firePower, E[] data, RobotData view, RobotData reference) {
+   public DataWave(Robot firer, RobotData target, double firePower, double[] data, RobotData view, RobotData reference) {
       super(firer.getX(), firer.getY(), Utils.angle(firer.getX(), firer.getY(), target.getX(), target.getY()),
             firePower, firer.getTime());
       init(data, view, reference);
    }
 
-   private void init(E[] data, RobotData view, RobotData reference) {
+   private void init(double[] data, RobotData view, RobotData reference) {
       this.data = data;
       this.view = view;
       this.reference = reference;
    }
 
-   public E[] getData() {
+   public double[] getData() {
       return data;
    }
 
