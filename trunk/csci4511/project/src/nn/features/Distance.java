@@ -20,12 +20,9 @@ public class Distance extends Feature {
       distances_ = new double[nFeatures_];
 
       double dDist = (maxDist_ - minDist_) / (nFeatures_ - 1);
-      System.out.print("Distance Features: ");
       for (int i = 0; i < nFeatures_; i++) {
          distances_[i] = minDist_ + dDist * i;
-         System.out.print(distances_[i] + ", ");
       }
-      System.out.println();
       stdDev_ = dDist;
    }
 
