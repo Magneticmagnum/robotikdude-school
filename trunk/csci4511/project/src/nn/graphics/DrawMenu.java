@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Set;
 
+import robocode.RobocodeFileWriter;
+
 public class DrawMenu {
 
 	public static double START_X = 0.0D;
@@ -116,9 +118,8 @@ public class DrawMenu {
 		return null;
 	}
 
-	public static void SaveMenu(final String path) throws IOException {
-		File f = new File(path);
-		PrintWriter out = new PrintWriter(f);
+	public static void save(File path) throws IOException {
+		PrintWriter out = new PrintWriter(new RobocodeFileWriter(path));
 		for (Menu m : menus) {
 			Set<String> items = m.getItems();
 			for (String i : items)
@@ -127,9 +128,8 @@ public class DrawMenu {
 		out.close();
 	}
 
-	public static void LoadMenu(final String path) throws IOException {
-		File f = new File(path);
-		BufferedReader in = new BufferedReader(new FileReader(f));
+	public static void load(File path) throws IOException {
+		BufferedReader in = new BufferedReader(new FileReader(path));
 		String l;
 		while (!(l = in.readLine()).isEmpty()) {
 			String[] spl = l.split("\\s*,\\s*");
