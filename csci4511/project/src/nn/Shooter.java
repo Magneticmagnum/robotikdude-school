@@ -5,10 +5,10 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
 import nn.features.Acceleration;
+import nn.features.AdvancingVelocity;
 import nn.features.Distance;
 import nn.features.Feature;
 import nn.features.LateralVelocity;
-import nn.features.Velocity;
 import nn.graphics.DrawMenu;
 import nn.graphics.RGraphics;
 import nn.move.GunMovement;
@@ -36,10 +36,10 @@ public class Shooter extends AdvancedRobot {
    // private RobotManager robots_;
 
 
-   private Distance            distance        = new Distance(10, 100, 1000);
-   private Velocity            velocity        = new Velocity(9);
-   private Acceleration        acceleration    = new Acceleration();
-   private LateralVelocity     lateralVelocity = new LateralVelocity(9);
+   private Distance            distance          = new Distance(10, 100, 1000);
+   private AdvancingVelocity   advancingVelocity = new AdvancingVelocity(17);
+   private Acceleration        acceleration      = new Acceleration();
+   private LateralVelocity     lateralVelocity   = new LateralVelocity(9);
 
    @Override
    public void run() {
@@ -112,7 +112,7 @@ public class Shooter extends AdvancedRobot {
       distance.draw(grid, enemy_, new RobotData(this), 20, 20, 20, 150);
 
       grid.setColor(Color.GREEN);
-      velocity.draw(grid, enemy_, new RobotData(this), 200, 20, 20, 100);
+      advancingVelocity.draw(grid, enemy_, new RobotData(this), 200, 20, 20, 100);
 
       grid.setColor(Color.YELLOW);
       acceleration.draw(grid, enemy_, new RobotData(this), 320, 20, 20, 30);
@@ -131,8 +131,8 @@ public class Shooter extends AdvancedRobot {
    public void onScannedRobot(ScannedRobotEvent event) {
       if (enemy_ == null) {
          enemy_ = new RobotData(event, this);
-         profile_ = new EnemyProfile(enemy_, this, new Feature[] { distance, velocity, acceleration, lateralVelocity },
-               31);
+         profile_ = new EnemyProfile(enemy_, this, new Feature[] { distance, advancingVelocity, acceleration,
+               lateralVelocity }, 31);
       } else {
          enemy_.update(event, this);
       }

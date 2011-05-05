@@ -33,7 +33,7 @@ public class Velocity extends Feature {
 
    @Override
    public double[] getFeatures(RobotData view, RobotData reference) {
-      double velocity = Utils.absolute(view.getVelocity());
+      double velocity = Math.abs(view.getVelocity());
       double[] features = new double[nFeatures_];
       for (int i = 0; i < nFeatures_; i++) {
          features[i] = Math.exp(-Utils.sqr(velocity - velocities_[i]) / stdDev_);

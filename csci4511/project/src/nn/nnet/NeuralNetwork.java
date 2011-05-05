@@ -108,7 +108,7 @@ public class NeuralNetwork {
 
       Vector layer = new Vector(inputs_ + 1);
       layer.add(input);
-      layer.set(inputs_, 1);
+      layer.set(inputs_, 0);
 
       for (Matrix m : weights_) {
          layer.set(sigmoid(Vector.multiply(m, layer)));
@@ -136,14 +136,14 @@ public class NeuralNetwork {
 
       Vector y = new Vector(outputs_ + 1);
       y.add(output);
-      y.set(outputs_, 1);
+      y.set(outputs_, 0);
 
       Vector[] in = new Vector[L + 1];
       Vector[] a = new Vector[L + 1];
 
       in[0] = new Vector(inputs_ + 1);
       in[0].add(input);
-      in[0].set(inputs_, 1);
+      in[0].set(inputs_, 0);
       a[0] = in[0];
 
       if (print) {
